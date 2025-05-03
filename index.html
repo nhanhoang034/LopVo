@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Danh Sách Tạo Bởi Nhân Hoàng</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h2>Danh Sách Tạo Bởi Nhân Hoàng</h2>
+
+    <input type="text" id="searchInput" placeholder="Nhập tên hoặc mã hội viên ...">
+
+    <label for="roleFilter">Quyền:</label>
+    <select id="roleFilter">
+        <option value="">Tất cả</option>
+        <option value="0">Quyền 0</option>
+        <option value="2">Quyền 2</option>
+        <option value="3">Quyền 3</option>
+        <option value="4">Quyền 4</option>
+        <option value="5">Quyền 5</option>
+        <option value="6">Quyền 6</option>
+        <option value="7">Quyền 7</option>
+        <option value="8">Quyền 8</option>
+        <option value="9">Quyền 9</option>
+        <option value="10">Quyền 10</option>
+        <option value="GV">GV</option>
+    </select>
+
+    <!-- Dòng này được di chuyển xuống dưới -->
+    <div class="info-bar">
+        <span id="totalCount">Hiện có: 0 học viên</span>
+    </div>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Họ và Tên</th>
+                <th>Mã Hội Viên</th>
+                <th>Quyền</th>
+            </tr>
+        </thead>
+        <tbody id="memberTable">
+            <!-- Dữ liệu sẽ được thêm vào đây -->
+        </tbody>
+    </table>
+
+    <script src="script.js"></script>
+</body>
+</html>
