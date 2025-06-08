@@ -65,6 +65,8 @@ document.addEventListener("DOMContentLoaded", function () {
             let textColor = "#000000";
 
             switch (role) {
+                case "1":
+                    bgColor = "#FFFFFF"; textColor = "#000000"; break; // trắng
                 case "2":
                     bgColor = "#ffff66"; textColor = "#000000"; break; // vàng
                 case "3":
