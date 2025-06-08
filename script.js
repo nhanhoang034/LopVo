@@ -33,7 +33,7 @@ document.addEventListener("DOMContentLoaded", function () {
             let csvData = await response.text();
 
             if (!csvData) {
-                console.error("⚠️ File CSV rỗng!");
+                console.error("File CSV rỗng!");
                 return;
             }
 
@@ -50,7 +50,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             renderTable(data);
         } catch (error) {
-            console.error("🚨 Lỗi khi tải file CSV:", error);
+            console.error("Lỗi khi tải file CSV:", error);
         }
     }
 
