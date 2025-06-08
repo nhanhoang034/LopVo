@@ -68,21 +68,21 @@ document.addEventListener("DOMContentLoaded", function () {
                 case "2":
                     bgColor = "#ffff66"; textColor = "#000000"; break; // vàng
                 case "3":
-                    bgColor = "#66cc66"; textColor = "#ffffff"; break; // xanh lá
+                    bgColor = "#66cc66"; textColor = "#000000"; break; // xanh lá
                 case "4":
-                    bgColor = "#3399ff"; textColor = "#ffffff"; break; // xanh dương
+                    bgColor = "#3399ff"; textColor = "#000000"; break; // xanh dương
                 case "5":
                     bgColor = "#ff9900"; textColor = "#000000"; break; // cam
                 case "6":
-                    bgColor = "#ff3333"; textColor = "#ffffff"; break; // đỏ
+                    bgColor = "#ff3333"; textColor = "#000000"; break; // đỏ
                 case "7":
-                    bgColor = "#cc0000"; textColor = "#ffffff"; break; // đỏ đậm
+                    bgColor = "#cc0000"; textColor = "#000000"; break; // đỏ đậm
                 case "8":
-                    bgColor = "#996633"; textColor = "#ffffff"; break; // nâu
+                    bgColor = "#996633"; textColor = "#000000"; break; // nâu
                 case "9":
-                    bgColor = "#9966cc"; textColor = "#ffffff"; break; // tím
+                    bgColor = "#9966cc"; textColor = "#000000"; break; // tím
                 case "GV":
-                    bgColor = "#663399"; textColor = "#ffffff"; break; // tím đậm
+                    bgColor = "#663399"; textColor = "#000000"; break; // tím đậm
                 default:
                     bgColor = "#cccccc"; textColor = "#000000"; break;
             }
