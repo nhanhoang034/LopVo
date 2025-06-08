@@ -3,7 +3,7 @@ body {
     font-family: 'Times New Roman', Times, serif;
     text-align: center;
     margin: 20px;
-    font-size: 18px; /* Tăng cỡ chữ toàn bộ */
+    font-size: 20px; /* Tăng cỡ chữ toàn bộ */
 }
 
 input, select {
