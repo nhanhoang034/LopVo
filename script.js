@@ -82,9 +82,9 @@ document.addEventListener("DOMContentLoaded", function () {
                 case "8":
                     bgColor = "#996633"; textColor = "#000000"; break; // nâu
                 case "9":
-                    bgColor = "##FF3399"; textColor = "#000000"; break; // tím
+                    bgColor = "#b087d8ff"; textColor = "#000000"; break; // tím
                 case "10":
-                    bgColor = "#9966cc"; textColor = "#000000"; break; // tím đậm
+                    bgColor = "#62358fff"; textColor = "#000000"; break; // tím đậm
                 case "GV":
                     bgColor = "#000000"; textColor = "#EEEEEE"; break; // đen
                 default:
