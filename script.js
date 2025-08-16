@@ -65,25 +65,25 @@ document.addEventListener("DOMContentLoaded", function () {
             let textColor = "#000000";
 
             switch (role) {
-                case "1":
+                case "Cấp 8":
                     bgColor = "#FFFFFF"; textColor = "#000000"; break; // trắng
-                case "2":
+                case "Cấp 7":
                     bgColor = "#ffff66"; textColor = "#000000"; break; // vàng
-                case "3":
+                case "Cấp 6":
                     bgColor = "#66cc66"; textColor = "#000000"; break; // xanh lá
-                case "4":
+                case "Cấp 5":
                     bgColor = "#3399ff"; textColor = "#000000"; break; // xanh dương
-                case "5":
+                case "Cấp 4":
                     bgColor = "#ff9900"; textColor = "#000000"; break; // cam
-                case "6":
+                case "Cấp 3":
                     bgColor = "#ff3333"; textColor = "#000000"; break; // đỏ
-                case "7":
+                case "Cấp 2":
                     bgColor = "#cc0000"; textColor = "#000000"; break; // đỏ đậm
-                case "8":
+                case "Cấp 1":
                     bgColor = "#996633"; textColor = "#000000"; break; // nâu
-                case "9":
+                case "1 Đẳng":
                     bgColor = "#b087d8ff"; textColor = "#000000"; break; // tím
-                case "10":
+                case "2 Đẳng":
                     bgColor = "#62358fff"; textColor = "#000000"; break; // tím đậm
                 case "GV":
                     bgColor = "#000000"; textColor = "#EEEEEE"; break; // đen
