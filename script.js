@@ -84,9 +84,16 @@ document.addEventListener("DOMContentLoaded", function () {
                 case "cap 3": bgColor = "#ff3333"; break; 
                 case "cap 2": bgColor = "#cc0000"; break; 
                 case "cap 1": bgColor = "#996633"; break; 
-                case "1 dang": bgColor = "#b087d8ff"; break; 
-                case "2 dang": bgColor = "#62358fff"; break; 
-                case "3 dang": bgColor = "#402060"; break; 
+
+                case "1 dang":
+                case "1 đẳng": bgColor = "#b087d8ff"; break; 
+
+                case "2 dang":
+                case "2 đẳng": bgColor = "#62358fff"; break; 
+
+                case "3 dang":
+                case "3 đẳng": bgColor = "#402060"; break; 
+
                 case "gv": bgColor = "#000000"; textColor = "#EEEEEE"; break; 
                 default: bgColor = "#cccccc"; break;
             }
