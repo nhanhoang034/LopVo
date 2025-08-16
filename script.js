@@ -5,6 +5,24 @@ document.addEventListener("DOMContentLoaded", function () {
     const searchInput = document.getElementById("searchInput");
     const roleFilter = document.getElementById("roleFilter");
 
+    // Map hiển thị quyền đầy đủ
+    const roleMap = {
+        "Cấp 10": "Cấp 10",
+        "Cấp 9": "Cấp 9",
+        "Cấp 8": "Quyền 1 - Cấp 8",
+        "Cấp 7": "Quyền 2 - Cấp 7",
+        "Cấp 6": "Quyền 3 - Cấp 6",
+        "Cấp 5": "Quyền 4 - Cấp 5",
+        "Cấp 4": "Quyền 5 - Cấp 4",
+        "Cấp 3": "Quyền 6 - Cấp 3",
+        "Cấp 2": "Quyền 7 - Cấp 2",
+        "Cấp 1": "Quyền 8 - Cấp 1",
+        "1 Đẳng": "Quyền 9 - 1 Đẳng",
+        "2 Đẳng": "Quyền 10 - 2 Đẳng",
+        "3 Đẳng": "Quyền 11 - 3 Đẳng",
+        "GV": "GV"
+    };
+
     // Modal để hiển thị ảnh lớn
     const imageModal = document.createElement("div");
     imageModal.id = "imageModal";
@@ -64,7 +82,7 @@ document.addEventListener("DOMContentLoaded", function () {
             let bgColor = "#cccccc";  // mặc định: xám
             let textColor = "#000000";
 
-            switch (role) {
+            switch (roleMap[role] || role) {
                 case "Quyền 1 - Cấp 8":
                     bgColor = "#FFFFFF"; textColor = "#000000"; break; // trắng
                 case "Quyền 2 - Cấp 7":
@@ -112,7 +130,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // Cột Quyền
             const roleCell = document.createElement("td");
-            roleCell.textContent = row[2];
+            roleCell.textContent = roleMap[row[2]] || row[2]; // ← chuyển đổi ở đây
             roleCell.style.backgroundColor = bgColor;
             roleCell.style.color = textColor;
             tr.appendChild(roleCell);
