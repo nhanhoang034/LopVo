@@ -70,23 +70,24 @@ document.addEventListener("DOMContentLoaded", function () {
             const tr = document.createElement("tr");
 
             const role = row[2]; // lấy trực tiếp từ CSV
+            const normRole = normalize(role);
 
             let bgColor = "#cccccc";  
             let textColor = "#000000";
 
-            switch (role.trim()) {
-                case "Cấp 8": bgColor = "#FFFFFF"; break; 
-                case "Cấp 7": bgColor = "#ffff66"; break; 
-                case "Cấp 6": bgColor = "#66cc66"; break; 
-                case "Cấp 5": bgColor = "#3399ff"; break; 
-                case "Cấp 4": bgColor = "#ff9900"; break; 
-                case "Cấp 3": bgColor = "#ff3333"; break; 
-                case "Cấp 2": bgColor = "#cc0000"; break; 
-                case "Cấp 1": bgColor = "#996633"; break; 
-                case "1 Đẳng": bgColor = "#b087d8ff"; break; 
-                case "2 Đẳng": bgColor = "#62358fff"; break; 
-                case "3 Đẳng": bgColor = "#402060"; break; 
-                case "GV": bgColor = "#000000"; textColor = "#EEEEEE"; break; 
+            switch (normRole) {
+                case "cap 8": bgColor = "#FFFFFF"; break; 
+                case "cap 7": bgColor = "#ffff66"; break; 
+                case "cap 6": bgColor = "#66cc66"; break; 
+                case "cap 5": bgColor = "#3399ff"; break; 
+                case "cap 4": bgColor = "#ff9900"; break; 
+                case "cap 3": bgColor = "#ff3333"; break; 
+                case "cap 2": bgColor = "#cc0000"; break; 
+                case "cap 1": bgColor = "#996633"; break; 
+                case "1 dang": bgColor = "#b087d8ff"; break; 
+                case "2 dang": bgColor = "#62358fff"; break; 
+                case "3 dang": bgColor = "#402060"; break; 
+                case "gv": bgColor = "#000000"; textColor = "#EEEEEE"; break; 
                 default: bgColor = "#cccccc"; break;
             }
 
