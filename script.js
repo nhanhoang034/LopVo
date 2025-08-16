@@ -65,21 +65,21 @@ document.addEventListener("DOMContentLoaded", function () {
             let textColor = "#000000";
 
             switch (role) {
-                case "Cấp 8":
+                case "Quyền 1 - Cấp 8":
                     bgColor = "#FFFFFF"; textColor = "#000000"; break; // trắng
-                case "Cấp 7":
+                case "Quyền 2 - Cấp 7":
                     bgColor = "#ffff66"; textColor = "#000000"; break; // vàng
-                case "Cấp 6":
+                case "Quyền 3 - Cấp 6":
                     bgColor = "#66cc66"; textColor = "#000000"; break; // xanh lá
-                case "Cấp 5":
+                case "Quyền 4 - Cấp 5":
                     bgColor = "#3399ff"; textColor = "#000000"; break; // xanh dương
-                case "Cấp 4":
+                case "Quyền 5 - Cấp 4":
                     bgColor = "#ff9900"; textColor = "#000000"; break; // cam
-                case "Cấp 3":
+                case "Quyền 6 - Cấp 3":
                     bgColor = "#ff3333"; textColor = "#000000"; break; // đỏ
-                case "Cấp 2":
+                case "Quyền 7 - Cấp 2":
                     bgColor = "#cc0000"; textColor = "#000000"; break; // đỏ đậm
-                case "Cấp 1":
+                case "Quyền 8 - Cấp 1":
                     bgColor = "#996633"; textColor = "#000000"; break; // nâu
                 case "1 Đẳng":
                     bgColor = "#b087d8ff"; textColor = "#000000"; break; // tím
