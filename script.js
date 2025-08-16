@@ -23,7 +23,7 @@ document.addEventListener("DOMContentLoaded", function () {
         "GV": "GV"
     };
 
-    // Modal để hiển thị ảnh lớn
+    // Modal ảnh
     const imageModal = document.createElement("div");
     imageModal.id = "imageModal";
 
@@ -84,33 +84,21 @@ document.addEventListener("DOMContentLoaded", function () {
             let textColor = "#000000";
 
             switch (displayRole) {
-                case "Quyền 1 - Cấp 8":
-                    bgColor = "#FFFFFF"; textColor = "#000000"; break; 
-                case "Quyền 2 - Cấp 7":
-                    bgColor = "#ffff66"; textColor = "#000000"; break; 
-                case "Quyền 3 - Cấp 6":
-                    bgColor = "#66cc66"; textColor = "#000000"; break; 
-                case "Quyền 4 - Cấp 5":
-                    bgColor = "#3399ff"; textColor = "#000000"; break; 
-                case "Quyền 5 - Cấp 4":
-                    bgColor = "#ff9900"; textColor = "#000000"; break; 
-                case "Quyền 6 - Cấp 3":
-                    bgColor = "#ff3333"; textColor = "#000000"; break; 
-                case "Quyền 7 - Cấp 2":
-                    bgColor = "#cc0000"; textColor = "#000000"; break; 
-                case "Quyền 8 - Cấp 1":
-                    bgColor = "#996633"; textColor = "#000000"; break; 
-                case "1 Đẳng":
-                    bgColor = "#b087d8ff"; textColor = "#000000"; break; 
-                case "2 Đẳng":
-                    bgColor = "#62358fff"; textColor = "#000000"; break; 
-                case "GV":
-                    bgColor = "#000000"; textColor = "#EEEEEE"; break; 
-                default:
-                    bgColor = "#cccccc"; textColor = "#000000"; break;
+                case "Quyền 1 - Cấp 8": bgColor = "#FFFFFF"; break; 
+                case "Quyền 2 - Cấp 7": bgColor = "#ffff66"; break; 
+                case "Quyền 3 - Cấp 6": bgColor = "#66cc66"; break; 
+                case "Quyền 4 - Cấp 5": bgColor = "#3399ff"; break; 
+                case "Quyền 5 - Cấp 4": bgColor = "#ff9900"; break; 
+                case "Quyền 6 - Cấp 3": bgColor = "#ff3333"; break; 
+                case "Quyền 7 - Cấp 2": bgColor = "#cc0000"; break; 
+                case "Quyền 8 - Cấp 1": bgColor = "#996633"; break; 
+                case "1 Đẳng":          bgColor = "#b087d8ff"; break; 
+                case "2 Đẳng":          bgColor = "#62358fff"; break; 
+                case "GV":              bgColor = "#000000"; textColor = "#EEEEEE"; break; 
+                default:                bgColor = "#cccccc"; break;
             }
 
-            // Cột Họ và Tên
+            // Họ và Tên
             const nameCell = document.createElement("td");
             nameCell.textContent = row[0];
             nameCell.style.backgroundColor = bgColor;
@@ -122,14 +110,14 @@ document.addEventListener("DOMContentLoaded", function () {
             });
             tr.appendChild(nameCell);
 
-            // Cột Mã Hội Viên
+            // Mã Hội Viên
             const memberCodeCell = document.createElement("td");
             memberCodeCell.textContent = row[1];
             memberCodeCell.style.backgroundColor = bgColor;
             memberCodeCell.style.color = textColor;
             tr.appendChild(memberCodeCell);
 
-            // Cột Quyền
+            // Quyền
             const roleCell = document.createElement("td");
             roleCell.textContent = displayRole; 
             roleCell.style.backgroundColor = bgColor;
