@@ -53,6 +53,16 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    // Hàm chuẩn hóa chuỗi (bỏ dấu, bỏ space thừa, lowercase)
+    function normalize(str) {
+        return str
+            .normalize("NFD")                 // tách dấu
+            .replace(/[\u0300-\u036f]/g, "")  // bỏ dấu
+            .replace(/\s+/g, " ")             // gộp nhiều space thành 1
+            .trim()
+            .toLowerCase();
+    }
+
     function renderTable(filteredData) {
         tableBody.innerHTML = "";
 
@@ -64,8 +74,7 @@ document.addEventListener("DOMContentLoaded", function () {
             let bgColor = "#cccccc";  
             let textColor = "#000000";
 
-            // Nếu bạn vẫn muốn giữ màu cho các cấp thì có thể để switch này
-            switch (role) {
+            switch (role.trim()) {
                 case "Cấp 8": bgColor = "#FFFFFF"; break; 
                 case "Cấp 7": bgColor = "#ffff66"; break; 
                 case "Cấp 6": bgColor = "#66cc66"; break; 
@@ -100,7 +109,7 @@ document.addEventListener("DOMContentLoaded", function () {
             memberCodeCell.style.color = textColor;
             tr.appendChild(memberCodeCell);
 
-            // Quyền (hiển thị y như trong CSV)
+            // Quyền (hiển thị y như CSV)
             const roleCell = document.createElement("td");
             roleCell.textContent = role; 
             roleCell.style.backgroundColor = bgColor;
@@ -120,13 +129,13 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function filterAndRender() {
-        const keyword = searchInput.value.toLowerCase().trim();
-        const selectedRole = roleFilter.value.trim().toLowerCase();
+        const keyword = normalize(searchInput.value);
+        const selectedRole = normalize(roleFilter.value);
 
         const filtered = data.filter(row => {
-            const matchKeyword = row.some(cell => cell.toLowerCase().includes(keyword));
+            const matchKeyword = row.some(cell => normalize(cell).includes(keyword));
             const matchRole = selectedRole === "" 
-                || row[2].trim().toLowerCase() === selectedRole;
+                || normalize(row[2]) === selectedRole;
             return matchKeyword && matchRole;
         });
 
