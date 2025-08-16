@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const closeBtn = document.createElement("span");
     closeBtn.id = "closeBtn";
-    closeBtn.textContent = "×"; 
+    closeBtn.textContent = "×";
     imageModal.appendChild(closeBtn);
 
     const modalImg = document.createElement("img");
@@ -28,8 +28,8 @@ document.addEventListener("DOMContentLoaded", function () {
 
     async function loadCSV() {
         try {
-            let response = await fetch('data.csv');
-            let csvData = await response.text();
+            const response = await fetch('data.csv');
+            const csvData = await response.text();
 
             if (!csvData) {
                 console.error("File CSV rỗng!");
@@ -38,11 +38,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
             data = csvData
                 .split(/\r?\n/)
-                .filter(line => line.trim() !== "") 
+                .filter(line => line.trim() !== "")
                 .map(line => {
-                    let cells = line.split(',').map(cell => cell.trim());
+                    const cells = line.split(',').map(cell => cell.trim());
                     if (cells.length < 4 || cells[3] === "") {
-                        cells[3] = "default.jpg"; 
+                        cells[3] = "default.jpg";
                     }
                     return cells;
                 });
@@ -53,12 +53,14 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Hàm chuẩn hóa chuỗi (bỏ dấu, bỏ space thừa, lowercase)
+    // Chuẩn hóa chuỗi: bỏ dấu, đổi đ/Đ -> d, gộp space, lowercase
     function normalize(str) {
+        if (!str) return "";
         return str
-            .normalize("NFD")                 // tách dấu
-            .replace(/[\u0300-\u036f]/g, "")  // bỏ dấu
-            .replace(/\s+/g, " ")             // gộp nhiều space thành 1
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "") // bỏ dấu kết hợp
+            .replace(/[đĐ]/g, "d")          // Đ/đ -> d (rất quan trọng cho "Đẳng")
+            .replace(/\s+/g, " ")
             .trim()
             .toLowerCase();
     }
@@ -69,33 +71,31 @@ document.addEventListener("DOMContentLoaded", function () {
         filteredData.forEach(row => {
             const tr = document.createElement("tr");
 
-            const role = row[2]; // lấy trực tiếp từ CSV
-            const normRole = normalize(role);
+            const role = row[2];                 // lấy đúng như CSV
+            const normRole = normalize(role);    // bản chuẩn hóa để quyết định màu
 
-            let bgColor = "#cccccc";  
+            let bgColor = "#cccccc";
             let textColor = "#000000";
 
             switch (normRole) {
-                case "cap 8": bgColor = "#FFFFFF"; break; 
-                case "cap 7": bgColor = "#ffff66"; break; 
-                case "cap 6": bgColor = "#66cc66"; break; 
-                case "cap 5": bgColor = "#3399ff"; break; 
-                case "cap 4": bgColor = "#ff9900"; break; 
-                case "cap 3": bgColor = "#ff3333"; break; 
-                case "cap 2": bgColor = "#cc0000"; break; 
-                case "cap 1": bgColor = "#996633"; break; 
+                case "cap 10": bgColor = "#eeeeee"; break; // tùy chọn
+                case "cap 9":  bgColor = "#dddddd"; break; // tùy chọn
+                case "cap 8":  bgColor = "#FFFFFF";  break;
+                case "cap 7":  bgColor = "#ffff66";  break;
+                case "cap 6":  bgColor = "#66cc66";  break;
+                case "cap 5":  bgColor = "#3399ff";  break;
+                case "cap 4":  bgColor = "#ff9900";  break;
+                case "cap 3":  bgColor = "#ff3333";  break;
+                case "cap 2":  bgColor = "#cc0000";  break;
+                case "cap 1":  bgColor = "#996633";  break;
 
-                case "1 dang":
-                case "1 đẳng": bgColor = "#b087d8ff"; break; 
+                // "1 Đẳng" -> normalize thành "1 dang"
+                case "1 dang": bgColor = "#b087d8ff"; break;
+                case "2 dang": bgColor = "#62358fff"; break;
+                case "3 dang": bgColor = "#402060";   break;
 
-                case "2 dang":
-                case "2 đẳng": bgColor = "#62358fff"; break; 
-
-                case "3 dang":
-                case "3 đẳng": bgColor = "#402060"; break; 
-
-                case "gv": bgColor = "#000000"; textColor = "#EEEEEE"; break; 
-                default: bgColor = "#cccccc"; break;
+                case "gv":     bgColor = "#000000"; textColor = "#EEEEEE"; break;
+                default:       bgColor = "#cccccc"; break;
             }
 
             // Họ và Tên
@@ -119,7 +119,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // Quyền (hiển thị y như CSV)
             const roleCell = document.createElement("td");
-            roleCell.textContent = role; 
+            roleCell.textContent = role;
             roleCell.style.backgroundColor = bgColor;
             roleCell.style.color = textColor;
             tr.appendChild(roleCell);
@@ -142,8 +142,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const filtered = data.filter(row => {
             const matchKeyword = row.some(cell => normalize(cell).includes(keyword));
-            const matchRole = selectedRole === "" 
-                || normalize(row[2]) === selectedRole;
+            const matchRole = selectedRole === "" || normalize(row[2]) === selectedRole;
             return matchKeyword && matchRole;
         });
 
