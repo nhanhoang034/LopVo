@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const tr = document.createElement("tr");
 
             const originalRole = row[2];
-            const displayRole = roleMap[originalRole] || originalRole;
+            const displayRole = roleMap[originalRole.trim()] || originalRole.trim();
 
             let bgColor = "#cccccc";  
             let textColor = "#000000";
@@ -94,6 +94,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 case "Quyền 8 - Cấp 1": bgColor = "#996633"; break; 
                 case "1 Đẳng":          bgColor = "#b087d8ff"; break; 
                 case "2 Đẳng":          bgColor = "#62358fff"; break; 
+                case "3 Đẳng":          bgColor = "#402060"; break; 
                 case "GV":              bgColor = "#000000"; textColor = "#EEEEEE"; break; 
                 default:                bgColor = "#cccccc"; break;
             }
@@ -138,11 +139,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function filterAndRender() {
         const keyword = searchInput.value.toLowerCase().trim();
-        const selectedRole = roleFilter.value;
+        const selectedRole = roleFilter.value.trim().toLowerCase();
 
         const filtered = data.filter(row => {
             const matchKeyword = row.some(cell => cell.toLowerCase().includes(keyword));
-            const matchRole = selectedRole === "" || row[2] === selectedRole;
+            const matchRole = selectedRole === "" 
+                || row[2].trim().toLowerCase() === selectedRole;
             return matchKeyword && matchRole;
         });
 
