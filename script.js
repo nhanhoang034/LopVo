@@ -5,24 +5,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const searchInput = document.getElementById("searchInput");
     const roleFilter = document.getElementById("roleFilter");
 
-    // Map hiển thị quyền đầy đủ
-    const roleMap = {
-        "Cấp 10": "Cấp 10",
-        "Cấp 9": "Cấp 9",
-        "Cấp 8": "Quyền 1 - Cấp 8",
-        "Cấp 7": "Quyền 2 - Cấp 7",
-        "Cấp 6": "Quyền 3 - Cấp 6",
-        "Cấp 5": "Quyền 4 - Cấp 5",
-        "Cấp 4": "Quyền 5 - Cấp 4",
-        "Cấp 3": "Quyền 6 - Cấp 3",
-        "Cấp 2": "Quyền 7 - Cấp 2",
-        "Cấp 1": "Quyền 8 - Cấp 1",
-        "1 Đẳng": "Quyền 9 - 1 Đẳng",
-        "2 Đẳng": "Quyền 10 - 2 Đẳng",
-        "3 Đẳng": "Quyền 11 - 3 Đẳng",
-        "GV": "GV"
-    };
-
     // Modal ảnh
     const imageModal = document.createElement("div");
     imageModal.id = "imageModal";
@@ -77,26 +59,26 @@ document.addEventListener("DOMContentLoaded", function () {
         filteredData.forEach(row => {
             const tr = document.createElement("tr");
 
-            const originalRole = row[2];
-            const displayRole = roleMap[originalRole.trim()] || originalRole.trim();
+            const role = row[2]; // lấy trực tiếp từ CSV
 
             let bgColor = "#cccccc";  
             let textColor = "#000000";
 
-            switch (displayRole) {
-                case "Quyền 1 - Cấp 8": bgColor = "#FFFFFF"; break; 
-                case "Quyền 2 - Cấp 7": bgColor = "#ffff66"; break; 
-                case "Quyền 3 - Cấp 6": bgColor = "#66cc66"; break; 
-                case "Quyền 4 - Cấp 5": bgColor = "#3399ff"; break; 
-                case "Quyền 5 - Cấp 4": bgColor = "#ff9900"; break; 
-                case "Quyền 6 - Cấp 3": bgColor = "#ff3333"; break; 
-                case "Quyền 7 - Cấp 2": bgColor = "#cc0000"; break; 
-                case "Quyền 8 - Cấp 1": bgColor = "#996633"; break; 
-                case "1 Đẳng":          bgColor = "#b087d8ff"; break; 
-                case "2 Đẳng":          bgColor = "#62358fff"; break; 
-                case "3 Đẳng":          bgColor = "#402060"; break; 
-                case "GV":              bgColor = "#000000"; textColor = "#EEEEEE"; break; 
-                default:                bgColor = "#cccccc"; break;
+            // Nếu bạn vẫn muốn giữ màu cho các cấp thì có thể để switch này
+            switch (role) {
+                case "Cấp 8": bgColor = "#FFFFFF"; break; 
+                case "Cấp 7": bgColor = "#ffff66"; break; 
+                case "Cấp 6": bgColor = "#66cc66"; break; 
+                case "Cấp 5": bgColor = "#3399ff"; break; 
+                case "Cấp 4": bgColor = "#ff9900"; break; 
+                case "Cấp 3": bgColor = "#ff3333"; break; 
+                case "Cấp 2": bgColor = "#cc0000"; break; 
+                case "Cấp 1": bgColor = "#996633"; break; 
+                case "1 Đẳng": bgColor = "#b087d8ff"; break; 
+                case "2 Đẳng": bgColor = "#62358fff"; break; 
+                case "3 Đẳng": bgColor = "#402060"; break; 
+                case "GV": bgColor = "#000000"; textColor = "#EEEEEE"; break; 
+                default: bgColor = "#cccccc"; break;
             }
 
             // Họ và Tên
@@ -118,9 +100,9 @@ document.addEventListener("DOMContentLoaded", function () {
             memberCodeCell.style.color = textColor;
             tr.appendChild(memberCodeCell);
 
-            // Quyền
+            // Quyền (hiển thị y như trong CSV)
             const roleCell = document.createElement("td");
-            roleCell.textContent = displayRole; 
+            roleCell.textContent = role; 
             roleCell.style.backgroundColor = bgColor;
             roleCell.style.color = textColor;
             tr.appendChild(roleCell);
