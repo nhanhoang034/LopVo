@@ -29,14 +29,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const closeBtn = document.createElement("span");
     closeBtn.id = "closeBtn";
-    closeBtn.textContent = "×"; // Dấu X để đóng
+    closeBtn.textContent = "×"; 
     imageModal.appendChild(closeBtn);
 
     const modalImg = document.createElement("img");
     imageModal.appendChild(modalImg);
     document.body.appendChild(imageModal);
 
-    // Nếu ảnh bị lỗi, gán ảnh mặc định
     modalImg.onerror = function () {
         this.src = "default.jpg";
     };
@@ -57,11 +56,11 @@ document.addEventListener("DOMContentLoaded", function () {
 
             data = csvData
                 .split(/\r?\n/)
-                .filter(line => line.trim() !== "") // Bỏ dòng trống
+                .filter(line => line.trim() !== "") 
                 .map(line => {
                     let cells = line.split(',').map(cell => cell.trim());
                     if (cells.length < 4 || cells[3] === "") {
-                        cells[3] = "default.jpg"; // Gán ảnh mặc định nếu không có
+                        cells[3] = "default.jpg"; 
                     }
                     return cells;
                 });
@@ -78,33 +77,35 @@ document.addEventListener("DOMContentLoaded", function () {
         filteredData.forEach(row => {
             const tr = document.createElement("tr");
 
-            const role = row[2];
-            let bgColor = "#cccccc";  // mặc định: xám
+            const originalRole = row[2];
+            const displayRole = roleMap[originalRole] || originalRole;
+
+            let bgColor = "#cccccc";  
             let textColor = "#000000";
 
-            switch (roleMap[role] || role) {
+            switch (displayRole) {
                 case "Quyền 1 - Cấp 8":
-                    bgColor = "#FFFFFF"; textColor = "#000000"; break; // trắng
+                    bgColor = "#FFFFFF"; textColor = "#000000"; break; 
                 case "Quyền 2 - Cấp 7":
-                    bgColor = "#ffff66"; textColor = "#000000"; break; // vàng
+                    bgColor = "#ffff66"; textColor = "#000000"; break; 
                 case "Quyền 3 - Cấp 6":
-                    bgColor = "#66cc66"; textColor = "#000000"; break; // xanh lá
+                    bgColor = "#66cc66"; textColor = "#000000"; break; 
                 case "Quyền 4 - Cấp 5":
-                    bgColor = "#3399ff"; textColor = "#000000"; break; // xanh dương
+                    bgColor = "#3399ff"; textColor = "#000000"; break; 
                 case "Quyền 5 - Cấp 4":
-                    bgColor = "#ff9900"; textColor = "#000000"; break; // cam
+                    bgColor = "#ff9900"; textColor = "#000000"; break; 
                 case "Quyền 6 - Cấp 3":
-                    bgColor = "#ff3333"; textColor = "#000000"; break; // đỏ
+                    bgColor = "#ff3333"; textColor = "#000000"; break; 
                 case "Quyền 7 - Cấp 2":
-                    bgColor = "#cc0000"; textColor = "#000000"; break; // đỏ đậm
+                    bgColor = "#cc0000"; textColor = "#000000"; break; 
                 case "Quyền 8 - Cấp 1":
-                    bgColor = "#996633"; textColor = "#000000"; break; // nâu
+                    bgColor = "#996633"; textColor = "#000000"; break; 
                 case "1 Đẳng":
-                    bgColor = "#b087d8ff"; textColor = "#000000"; break; // tím
+                    bgColor = "#b087d8ff"; textColor = "#000000"; break; 
                 case "2 Đẳng":
-                    bgColor = "#62358fff"; textColor = "#000000"; break; // tím đậm
+                    bgColor = "#62358fff"; textColor = "#000000"; break; 
                 case "GV":
-                    bgColor = "#000000"; textColor = "#EEEEEE"; break; // đen
+                    bgColor = "#000000"; textColor = "#EEEEEE"; break; 
                 default:
                     bgColor = "#cccccc"; textColor = "#000000"; break;
             }
@@ -130,7 +131,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             // Cột Quyền
             const roleCell = document.createElement("td");
-            roleCell.textContent = roleMap[row[2]] || row[2]; // ← chuyển đổi ở đây
+            roleCell.textContent = displayRole; 
             roleCell.style.backgroundColor = bgColor;
             roleCell.style.color = textColor;
             tr.appendChild(roleCell);
