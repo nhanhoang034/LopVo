@@ -30,7 +30,8 @@
         <option value="GV">GV</option>
     </select>
 
-    <!-- Dòng này được di chuyển xuống dưới -->
+    <button id="exportBtn">Xuất Excel</button>
+
     <div class="info-bar">
         <span id="totalCount">Hiện có: 0 học viên</span>
     </div>
@@ -38,14 +39,13 @@
     <table>
         <thead>
             <tr>
+                <th>Chọn</th>
                 <th>Họ và Tên</th>
                 <th>Mã Hội Viên</th>
                 <th>Quyền</th>
             </tr>
         </thead>
-        <tbody id="memberTable">
-            <!-- Dữ liệu sẽ được thêm vào đây -->
-        </tbody>
+        <tbody id="memberTable"></tbody>
     </table>
 
     <script src="script.js"></script>

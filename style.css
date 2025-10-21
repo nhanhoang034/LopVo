@@ -3,21 +3,34 @@ body {
     font-family: 'Times New Roman', Times, serif;
     text-align: center;
     margin: 20px;
-    font-size: 20px; /* Tăng cỡ chữ toàn bộ */
+    font-size: 20px;
 }
 
-input, select {
+input, select, button {
     width: 300px;
     padding: 8px;
     margin: 10px 5px;
-    font-size: 19px; /* Tăng cỡ chữ cho ô nhập và ô chọn */
+    font-size: 19px;
+}
+
+button {
+    width: auto;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #45a049;
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
-    font-size: 19px; /* Tăng cỡ chữ trong bảng */
+    font-size: 19px;
 }
 
 th, td {
@@ -27,37 +40,37 @@ th, td {
 
 th {
     background-color: #f2f2f2;
-    font-size: 20px; /* Tăng cỡ chữ tiêu đề bảng */
+    font-size: 20px;
 }
 
 /* Chỉ chỉnh ảnh trong bảng to hơn */
 td img {
     width: 100px;
     height: 100px;
-    object-fit: cover; /* Đảm bảo ảnh không bị méo */
-    cursor: pointer; /* Thêm con trỏ khi hover lên ảnh */
+    object-fit: cover;
+    cursor: pointer;
 }
 
-/* Thêm kiểu cho modal ảnh */
+/* Modal ảnh */
 #imageModal {
-    display: none; /* Ẩn mặc định */
+    display: none;
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(0, 0, 0, 0.8); /* Nền đen mờ */
+    background-color: rgba(0, 0, 0, 0.8);
     justify-content: center;
     align-items: center;
-    z-index: 1000; /* Đảm bảo nó nằm trên các phần tử khác */
+    z-index: 1000;
 }
 
 #imageModal img {
-    max-width: 90%; /* Giới hạn ảnh tối đa 90% chiều rộng màn hình */
-    max-height: 90%; /* Giới hạn ảnh tối đa 90% chiều cao màn hình */
-    object-fit: contain; /* Đảm bảo ảnh không bị méo và vừa vặn */
-    image-rendering: crisp-edges; /* Cải thiện độ sắc nét của ảnh */
-    border-radius: 5px; /* Thêm một chút bo góc cho ảnh */
+    max-width: 90%;
+    max-height: 90%;
+    object-fit: contain;
+    image-rendering: crisp-edges;
+    border-radius: 5px;
 }
 
 #closeBtn {
