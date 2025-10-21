@@ -3,6 +3,51 @@ body {
     font-family: 'Times New Roman', Times, serif;
     text-align: center;
     margin: 20px;
+    font-size: 20px; /* Tăng cỡ chữ toàn bộ */
+}
+
+input, select {
+    width: 300px;
+    padding: 8px;
+    margin: 10px 5px;
+    font-size: 19px; /* Tăng cỡ chữ cho ô nhập và ô chọn */
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    font-size: 19px; /* Tăng cỡ chữ trong bảng */
+}
+
+th, td {
+    border: 1px solid black;
+    padding: 8px;
+}
+
+th {
+    background-color: #f2f2f2;
+    font-size: 20px; /* Tăng cỡ chữ tiêu đề bảng */
+}
+
+/* Chỉ chỉnh ảnh trong bảng to hơn */
+td img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover; /* Đảm bảo ảnh không bị méo */
+    cursor: pointer; /* Thêm con trỏ khi hover lên ảnh */
+}
+
+/* Thêm kiểu cho modal ảnh */
+#imageModal {
+    display: none; /* Ẩn mặc định */
+    position: fixed;
+    top: 0;
+    left: 0;/* Giữ nguyên phong cách hiện tại */
+body {
+    font-family: 'Times New Roman', Times, serif;
+    text-align: center;
+    margin: 20px;
     font-size: 20px;
 }
 
@@ -71,6 +116,32 @@ td img {
     object-fit: contain;
     image-rendering: crisp-edges;
     border-radius: 5px;
+}
+
+#closeBtn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    color: #fff;
+    font-size: 30px;
+    cursor: pointer;
+    z-index: 1100;
+}
+
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8); /* Nền đen mờ */
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Đảm bảo nó nằm trên các phần tử khác */
+}
+
+#imageModal img {
+    max-width: 90%; /* Giới hạn ảnh tối đa 90% chiều rộng màn hình */
+    max-height: 90%; /* Giới hạn ảnh tối đa 90% chiều cao màn hình */
+    object-fit: contain; /* Đảm bảo ảnh không bị méo và vừa vặn */
+    image-rendering: crisp-edges; /* Cải thiện độ sắc nét của ảnh */
+    border-radius: 5px; /* Thêm một chút bo góc cho ảnh */
 }
 
 #closeBtn {
