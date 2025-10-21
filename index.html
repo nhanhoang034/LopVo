@@ -1,53 +1,51 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Danh Sách Lớp Võ</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Danh Sách Lớp Võ</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <h2>Danh Sách Tạo Bởi Nhân Hoàng</h2>
-    <button id="exportBtn">Xuất Excel</button>
-    <input type="text" id="searchInput" placeholder="Nhập tên hoặc mã hội viên ...">
+  <h2>Danh Sách Tạo Bởi Nhân Hoàng</h2>
 
-    <label for="roleFilter">Quyền:</label>
-    <select id="roleFilter">
-        <option value="">Tất cả</option>
-        <option value="Cấp 10">Cấp 10</option>
-        <option value="Cấp 9">Cấp 9</option>
-        <option value="Cấp 8">Cấp 8</option>
-        <option value="Cấp 7">Cấp 7</option>
-        <option value="Cấp 6">Cấp 6</option>
-        <option value="Cấp 5">Cấp 5</option>
-        <option value="Cấp 4">Cấp 4</option>
-        <option value="Cấp 3">Cấp 3</option>
-        <option value="Cấp 2">Cấp 2</option>
-        <option value="Cấp 1">Cấp 1</option>
-        <option value="1 Đẳng">1 Đẳng</option>
-        <option value="2 Đẳng">2 Đẳng</option>
-        <option value="3 Đẳng">3 Đẳng</option>
-        <option value="GV">GV</option>
-    </select>
+  <input type="text" id="searchInput" placeholder="Nhập tên hoặc mã hội viên ...">
+  <label for="roleFilter">Quyền:</label>
+  <select id="roleFilter">
+    <option value="">Tất cả</option>
+    <option value="Cấp 10">Cấp 10</option>
+    <option value="Cấp 9">Cấp 9</option>
+    <option value="Cấp 8">Cấp 8</option>
+    <option value="Cấp 7">Cấp 7</option>
+    <option value="Cấp 6">Cấp 6</option>
+    <option value="Cấp 5">Cấp 5</option>
+    <option value="Cấp 4">Cấp 4</option>
+    <option value="Cấp 3">Cấp 3</option>
+    <option value="Cấp 2">Cấp 2</option>
+    <option value="Cấp 1">Cấp 1</option>
+    <option value="1 Đẳng">1 Đẳng</option>
+    <option value="2 Đẳng">2 Đẳng</option>
+    <option value="3 Đẳng">3 Đẳng</option>
+    <option value="GV">GV</option>
+  </select>
 
-    <!-- Dòng này được di chuyển xuống dưới -->
-    <div class="info-bar">
-        <span id="totalCount">Hiện có: 0 học viên</span>
-    </div>
+  <div class="info-bar">
+    <span id="totalCount">Hiện có: 0 học viên</span>
+  </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>Họ và Tên</th>
-                <th>Mã Hội Viên</th>
-                <th>Quyền</th>
-            </tr>
-        </thead>
-        <tbody id="memberTable">
-            <!-- Dữ liệu sẽ được thêm vào đây -->
-        </tbody>
-    </table>
+  <table>
+    <thead>
+      <tr>
+        <th>Họ và Tên</th>
+        <th>Mã Hội Viên</th>
+        <th>Quyền</th>
+      </tr>
+    </thead>
+    <tbody id="memberTable">
+      <!-- Dữ liệu sẽ được thêm vào đây -->
+    </tbody>
+  </table>
 
-    <script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
