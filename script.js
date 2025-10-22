@@ -79,15 +79,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
             switch (normRole) {
                 case "cap 10": bgColor = "#eeeeee"; break; // tùy chọn
-                case "cap 9":  bgColor = "#ffff66"; break; // tùy chọn
-                case "cap 8":  bgColor = "#ff9d0aff";  break;
+                case "cap 9":  bgColor = "#FFFF00"; break; // tùy chọn
+                case "cap 8":  bgColor = "#ff9d0aff";break;
                 case "cap 7":  bgColor = "#66cc66";  break;
                 case "cap 6":  bgColor = "#3399ff";  break;
-                case "cap 5":  bgColor = "#0400ffff";  break;
-                case "cap 4":  bgColor = "#c800ffff";  break;
-                case "cap 3":  bgColor = "#ff3333";  break;
-                case "cap 2":  bgColor = "#d22626ff";  break;
-                case "cap 1":  bgColor = "#ce0e0eff";  break;
+                case "cap 5":  bgColor = "#c800ffff";break;
+                case "cap 4":  bgColor = "#FF0000";  break;
+                case "cap 3":  bgColor = "#DD0000";  break;
+                case "cap 2":  bgColor = "#AA0000";  break;
+                case "cap 1":  bgColor = "#550000";  break;
 
                 // "1 Đẳng" -> normalize thành "1 dang"
                 case "1 dang": bgColor = "#b087d8ff"; break;
