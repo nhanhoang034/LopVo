@@ -4,16 +4,16 @@ document.addEventListener("DOMContentLoaded", function () {
     const tableBody = document.getElementById("memberTable");
     const searchInput = document.getElementById("searchInput");
     const roleFilter = document.getElementById("roleFilter");
+    const genderFilter = document.getElementById("genderFilter");
+    const yearFilter = document.getElementById("yearFilter");
 
-    // Modal ảnh
+    // Tạo Modal ảnh (Giữ nguyên tính năng cũ)
     const imageModal = document.createElement("div");
     imageModal.id = "imageModal";
-
     const closeBtn = document.createElement("span");
     closeBtn.id = "closeBtn";
     closeBtn.textContent = "×";
     imageModal.appendChild(closeBtn);
-
     const modalImg = document.createElement("img");
     imageModal.appendChild(modalImg);
     document.body.appendChild(imageModal);
@@ -26,6 +26,7 @@ document.addEventListener("DOMContentLoaded", function () {
         imageModal.style.display = "none";
     });
 
+    // Tải CSV
     async function loadCSV() {
         try {
             const response = await fetch('data.csv');
@@ -41,8 +42,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 .filter(line => line.trim() !== "")
                 .map(line => {
                     const cells = line.split(',').map(cell => cell.trim());
-                    if (cells.length < 4 || cells[3] === "") {
-                        cells[3] = "default.jpg";
+                    // Cấu trúc mong đợi: [Tên, Mã, NgàySinh, GiớiTính, Quyền, LinkẢnh]
+                    // Link ảnh ở index 5
+                    if (cells.length < 6 || cells[5] === "") {
+                        cells[5] = "default.jpg";
                     }
                     return cells;
                 });
@@ -53,13 +56,12 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Chuẩn hóa chuỗi: bỏ dấu, đổi đ/Đ -> d, gộp space, lowercase
     function normalize(str) {
         if (!str) return "";
         return str
             .normalize("NFD")
-            .replace(/[\u0300-\u036f]/g, "") // bỏ dấu kết hợp
-            .replace(/[đĐ]/g, "d")          // Đ/đ -> d (rất quan trọng cho "Đẳng")
+            .replace(/[\u0300-\u036f]/g, "")
+            .replace(/[đĐ]/g, "d")
             .replace(/\s+/g, " ")
             .trim()
             .toLowerCase();
@@ -71,15 +73,22 @@ document.addEventListener("DOMContentLoaded", function () {
         filteredData.forEach(row => {
             const tr = document.createElement("tr");
 
-            const role = row[2];                 // lấy đúng như CSV
-            const normRole = normalize(role);    // bản chuẩn hóa để quyết định màu
+            // Mapping dữ liệu từ row
+            const name = row[0];
+            const memberCode = row[1];
+            const dob = row[2];
+            const gender = row[3];
+            const role = row[4];
+            const imageLink = row[5];
 
+            const normRole = normalize(role);
             let bgColor = "#cccccc";
             let textColor = "#000000";
 
+            // Logic đổ màu cấp bậc (Giữ nguyên)
             switch (normRole) {
-                case "cap 10": bgColor = "#eeeeee"; break; // tùy chọn
-                case "cap 9":  bgColor = "#FFFF00"; break; // tùy chọn
+                case "cap 10": bgColor = "#eeeeee"; break;
+                case "cap 9":  bgColor = "#FFFF00"; break;
                 case "cap 8":  bgColor = "#ff9d0aff";break;
                 case "cap 7":  bgColor = "#66cc66";  break;
                 case "cap 6":  bgColor = "#3399ff";  break;
@@ -88,41 +97,34 @@ document.addEventListener("DOMContentLoaded", function () {
                 case "cap 3":  bgColor = "#DD0000";  break;
                 case "cap 2":  bgColor = "#AA0000";  break;
                 case "cap 1":  bgColor = "#550000";  break;
-
-                // "1 Đẳng" -> normalize thành "1 dang"
                 case "1 dang": bgColor = "#b087d8ff"; break;
                 case "2 dang": bgColor = "#62358fff"; break;
                 case "3 dang": bgColor = "#402060";   break;
-
                 case "gv":     bgColor = "#000000"; textColor = "#EEEEEE"; break;
                 default:       bgColor = "#cccccc"; break;
             }
 
-            // Họ và Tên
-            const nameCell = document.createElement("td");
-            nameCell.textContent = row[0];
-            nameCell.style.backgroundColor = bgColor;
-            nameCell.style.color = textColor;
-            nameCell.style.cursor = "pointer";
-            nameCell.addEventListener("click", function () {
-                modalImg.src = row[3] && row[3].trim() !== "" ? row[3] : "default.jpg";
-                imageModal.style.display = "flex";
-            });
-            tr.appendChild(nameCell);
+            // Tạo các ô dữ liệu
+            const createCell = (content, isName = false) => {
+                const td = document.createElement("td");
+                td.textContent = content;
+                td.style.backgroundColor = bgColor;
+                td.style.color = textColor;
+                if (isName) {
+                    td.style.cursor = "pointer";
+                    td.addEventListener("click", function () {
+                        modalImg.src = imageLink;
+                        imageModal.style.display = "flex";
+                    });
+                }
+                return td;
+            };
 
-            // Mã Hội Viên
-            const memberCodeCell = document.createElement("td");
-            memberCodeCell.textContent = row[1];
-            memberCodeCell.style.backgroundColor = bgColor;
-            memberCodeCell.style.color = textColor;
-            tr.appendChild(memberCodeCell);
-
-            // Quyền (hiển thị y như CSV)
-            const roleCell = document.createElement("td");
-            roleCell.textContent = role;
-            roleCell.style.backgroundColor = bgColor;
-            roleCell.style.color = textColor;
-            tr.appendChild(roleCell);
+            tr.appendChild(createCell(name, true));     // Cột Tên (Click xem ảnh)
+            tr.appendChild(createCell(memberCode));    // Cột Mã
+            tr.appendChild(createCell(dob));           // Cột Ngày Sinh
+            tr.appendChild(createCell(gender));        // Cột Giới Tính
+            tr.appendChild(createCell(role));          // Cột Quyền
 
             tableBody.appendChild(tr);
         });
@@ -139,18 +141,36 @@ document.addEventListener("DOMContentLoaded", function () {
     function filterAndRender() {
         const keyword = normalize(searchInput.value);
         const selectedRole = normalize(roleFilter.value);
+        const selectedGender = normalize(genderFilter.value);
+        const selectedYear = yearFilter.value;
 
         const filtered = data.filter(row => {
-            const matchKeyword = row.some(cell => normalize(cell).includes(keyword));
-            const matchRole = selectedRole === "" || normalize(row[2]) === selectedRole;
-            return matchKeyword && matchRole;
+            // Chuẩn hóa dữ liệu trong hàng để lọc
+            const normName = normalize(row[0]);
+            const normCode = normalize(row[1]);
+            const dobStr = row[2]; // dd-mm-yyyy
+            const normGender = normalize(row[3]);
+            const normRowRole = normalize(row[4]);
+
+            // Lấy năm sinh từ chuỗi dd-mm-yyyy
+            const yearOfBirth = dobStr.includes('-') ? dobStr.split('-')[2] : "";
+
+            const matchKeyword = normName.includes(keyword) || normCode.includes(keyword);
+            const matchRole = selectedRole === "" || normRowRole === selectedRole;
+            const matchGender = selectedGender === "" || normGender === selectedGender;
+            const matchYear = selectedYear === "" || yearOfBirth === selectedYear;
+
+            return matchKeyword && matchRole && matchGender && matchYear;
         });
 
         renderTable(filtered);
     }
 
+    // Sự kiện lắng nghe
     searchInput.addEventListener("input", filterAndRender);
     roleFilter.addEventListener("change", filterAndRender);
+    genderFilter.addEventListener("change", filterAndRender);
+    yearFilter.addEventListener("input", filterAndRender);
 
     loadCSV();
 });

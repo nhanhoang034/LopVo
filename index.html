@@ -8,6 +8,7 @@
 </head>
 <body>
     <h2>Danh Sách Tạo Bởi Nhân Hoàng</h2>
+    <p style="font-style: italic; color: #ff0000;">Quyền = 9 - Cấp</p>
 
     <input type="text" id="searchInput" placeholder="Nhập tên hoặc mã hội viên ...">
 
@@ -30,7 +31,16 @@
         <option value="GV">GV</option>
     </select>
 
-    <!-- Dòng này được di chuyển xuống dưới -->
+    <label for="genderFilter">Giới tính:</label>
+    <select id="genderFilter">
+        <option value="">Tất cả</option>
+        <option value="Nam">Nam</option>
+        <option value="Nữ">Nữ</option>
+    </select>
+
+    <label for="yearFilter">Năm sinh:</label>
+    <input type="number" id="yearFilter" placeholder="Ví dụ: 2010" style="width: 100px;">
+
     <div class="info-bar">
         <span id="totalCount">Hiện có: 0 học viên</span>
     </div>
@@ -40,12 +50,12 @@
             <tr>
                 <th>Họ và Tên</th>
                 <th>Mã Hội Viên</th>
+                <th>Ngày Sinh</th>
+                <th>Giới Tính</th>
                 <th>Quyền</th>
             </tr>
         </thead>
-        <tbody id="memberTable">
-            <!-- Dữ liệu sẽ được thêm vào đây -->
-        </tbody>
+        <tbody id="memberTable"></tbody>
     </table>
 
     <script src="script.js"></script>
