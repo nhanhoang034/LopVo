@@ -7,6 +7,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const genderFilter = document.getElementById("genderFilter");
     const yearFilter = document.getElementById("yearFilter");
 
+    // Tạo Modal ảnh
     const imageModal = document.createElement("div");
     imageModal.id = "imageModal";
     const closeBtn = document.createElement("span");
@@ -30,31 +31,29 @@ document.addEventListener("DOMContentLoaded", function () {
                 .filter(line => line.trim() !== "")
                 .map(line => {
                     const cells = line.split(',').map(cell => cell.trim());
+                    // Cấu trúc: [Tên, Mã, NgàySinh, GiớiTính, Quyền, LinkẢnh]
                     if (cells.length < 6 || cells[5] === "") {
                         cells[5] = "default.jpg";
                     }
                     return cells;
                 });
 
-            // Tự động tạo cả 2 bộ lọc Quyền và Năm sinh
-            populateFilters(data); 
+            populateDynamicFilters(data); 
             renderTable(data);
         } catch (error) {
-            console.error("Lỗi khi tải file CSV:", error);
+            console.error("Lỗi tải CSV:", error);
         }
     }
 
-    // Hàm tự động trích xuất các giá trị duy nhất từ CSV để đưa vào bộ lọc
-    function populateFilters(memberData) {
+    // Tự động lấy danh sách Quyền và Năm sinh có trong dữ liệu
+    function populateDynamicFilters(memberData) {
         const roles = new Set();
         const years = new Set();
 
         memberData.forEach(row => {
             const dob = row[2];
-            const role = row[4]; // Cột Quyền
-
+            const role = row[4];
             if (role) roles.add(role);
-            
             if (dob && dob.includes('-')) {
                 const parts = dob.split('-');
                 const year = parts[parts.length - 1];
@@ -62,7 +61,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
 
-        // Đổ dữ liệu vào ô Quyền (Sắp xếp theo ý muốn nếu cần, ở đây để mặc định)
+        // Đổ dữ liệu vào ô chọn Quyền
         Array.from(roles).sort().forEach(role => {
             const option = document.createElement("option");
             option.value = role;
@@ -70,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function () {
             roleFilter.appendChild(option);
         });
 
-        // Đổ dữ liệu vào ô Năm sinh (Sắp xếp năm giảm dần)
+        // Đổ dữ liệu vào ô chọn Năm sinh (giảm dần)
         Array.from(years).sort((a, b) => b - a).forEach(year => {
             const option = document.createElement("option");
             option.value = year;
@@ -94,7 +93,7 @@ document.addEventListener("DOMContentLoaded", function () {
             let bgColor = "#cccccc";
             let textColor = "#000000";
 
-            // Logic màu sắc giữ nguyên
+            // Logic màu sắc theo cấp bậc
             switch (normRole) {
                 case "cap 10": bgColor = "#eeeeee"; break;
                 case "cap 9":  bgColor = "#FFFF00"; break;

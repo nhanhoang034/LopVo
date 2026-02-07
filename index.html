@@ -5,58 +5,39 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Danh Sách Lớp Võ</title>
     <link rel="stylesheet" href="style.css">
-    <style>
-        .filter-group {
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-        }
-        .filter-group label {
-            font-weight: bold;
-            min-width: 80px;
-        }
-        .filter-group select, .filter-group input {
-            padding: 5px;
-            flex: 1;
-            max-width: 300px;
-        }
-        .info-bar {
-            margin: 20px 0 10px 0;
-            font-weight: bold;
-            color: #333;
-        }
-    </style>
 </head>
 <body>
     <h2>Danh Sách Tạo Bởi Nhân Hoàng</h2>
     <p style="font-weight: bold; font-size: 1.2em; color: #ff0000;">Quyền = 9 - Cấp</p>
 
-    <div class="filter-group">
-        <label for="searchInput">Tìm kiếm:</label>
-        <input type="text" id="searchInput" placeholder="Nhập tên hoặc mã hội viên ...">
-    </div>
+    <div class="filter-container">
+        <div class="filter-row">
+            <label for="searchInput">Tìm kiếm:</label>
+            <input type="text" id="searchInput" placeholder="Tên hoặc mã hội viên ...">
+        </div>
 
-    <div class="filter-group">
-        <label for="roleFilter">Quyền:</label>
-        <select id="roleFilter">
-            <option value="">Tất cả quyền</option>
+        <div class="filter-row">
+            <label for="roleFilter">Quyền:</label>
+            <select id="roleFilter">
+                <option value="">Tất cả quyền</option>
             </select>
-    </div>
+        </div>
 
-    <div class="filter-group">
-        <label for="genderFilter">Giới tính:</label>
-        <select id="genderFilter">
-            <option value="">Tất cả</option>
-            <option value="Nam">Nam</option>
-            <option value="Nữ">Nữ</option>
-        </select>
-    </div>
-
-    <div class="filter-group">
-        <label for="yearFilter">Năm sinh:</label>
-        <select id="yearFilter">
-            <option value="">Tất cả năm</option>
+        <div class="filter-row">
+            <label for="genderFilter">Giới tính:</label>
+            <select id="genderFilter">
+                <option value="">Tất cả</option>
+                <option value="Nam">Nam</option>
+                <option value="Nữ">Nữ</option>
             </select>
+        </div>
+
+        <div class="filter-row">
+            <label for="yearFilter">Năm sinh:</label>
+            <select id="yearFilter">
+                <option value="">Tất cả năm</option>
+            </select>
+        </div>
     </div>
 
     <div class="info-bar">
