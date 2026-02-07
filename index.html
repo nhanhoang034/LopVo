@@ -6,45 +6,53 @@
     <title>Danh Sách Lớp Võ</title>
     <link rel="stylesheet" href="style.css">
     <style>
-        .filter-row { margin-bottom: 15px; } /* Tạo khoảng cách giữa 2 dòng lọc */
-        label { font-weight: bold; margin-left: 10px; }
+        .filter-group {
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+        .filter-group label {
+            font-weight: bold;
+            min-width: 80px;
+        }
+        .filter-group select, .filter-group input {
+            padding: 5px;
+            flex: 1;
+            max-width: 300px;
+        }
+        .info-bar {
+            margin: 20px 0 10px 0;
+            font-weight: bold;
+            color: #333;
+        }
     </style>
 </head>
 <body>
     <h2>Danh Sách Tạo Bởi Nhân Hoàng</h2>
     <p style="font-weight: bold; font-size: 1.2em; color: #ff0000;">Quyền = 9 - Cấp</p>
 
-    <div class="filter-row">
+    <div class="filter-group">
+        <label for="searchInput">Tìm kiếm:</label>
         <input type="text" id="searchInput" placeholder="Nhập tên hoặc mã hội viên ...">
-        
-        <label for="roleFilter">Quyền:</label>
-        <select id="roleFilter">
-            <option value="">Tất cả</option>
-            <option value="Cấp 10">Cấp 10</option>
-            <option value="Cấp 9">Cấp 9</option>
-            <option value="Cấp 8">Cấp 8</option>
-            <option value="Cấp 7">Cấp 7</option>
-            <option value="Cấp 6">Cấp 6</option>
-            <option value="Cấp 5">Cấp 5</option>
-            <option value="Cấp 4">Cấp 4</option>
-            <option value="Cấp 3">Cấp 3</option>
-            <option value="Cấp 2">Cấp 2</option>
-            <option value="Cấp 1">Cấp 1</option>
-            <option value="1 Đẳng">1 Đẳng</option>
-            <option value="2 Đẳng">2 Đẳng</option>
-            <option value="3 Đẳng">3 Đẳng</option>
-            <option value="GV">GV</option>
-        </select>
     </div>
 
-    <div class="filter-row">
-        <label for="genderFilter" style="margin-left: 0;">Giới tính:</label>
+    <div class="filter-group">
+        <label for="roleFilter">Quyền:</label>
+        <select id="roleFilter">
+            <option value="">Tất cả quyền</option>
+            </select>
+    </div>
+
+    <div class="filter-group">
+        <label for="genderFilter">Giới tính:</label>
         <select id="genderFilter">
             <option value="">Tất cả</option>
             <option value="Nam">Nam</option>
             <option value="Nữ">Nữ</option>
         </select>
+    </div>
 
+    <div class="filter-group">
         <label for="yearFilter">Năm sinh:</label>
         <select id="yearFilter">
             <option value="">Tất cả năm</option>
