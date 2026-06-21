@@ -44,7 +44,10 @@
     <div class="info-bar" style="display: flex; justify-content: space-between; width: 100%; max-width: 1000px; align-items: center; margin-bottom: 10px;">
         <span id="totalCount">Hiện có: 0 học viên</span>
         <div style="display: flex; align-items: center; gap: 15px;">
-            <span id="selectedCount" style="color: #0088cc;">Đã chọn: 0 học viên</span>
+            <span id="selectedCount" style="color: #0088cc; font-weight: bold;">Đã chọn: 0 học viên</span>
+            <button id="resetBtn" title="Xóa toàn bộ dấu tick đang chọn" style="padding: 6px 10px; font-size: 15px; background-color: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
+                🔄 Reset
+            </button>
             <button id="exportBtn" style="padding: 6px 12px; font-size: 16px; background-color: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
                 💚 Xuất Excel
             </button>
@@ -54,14 +57,12 @@
     <table>
         <thead>
             <tr>
-                <th style="width: 40px;">Chọn</th> <th>Họ và Tên</th>
+                <th>Họ và Tên</th>
                 <th>Mã Hội Viên</th>
                 <th>Copy</th>
-                <th>Ngày Sinh</th>
+                <th style="width: 50px;">Chọn</th> <th>Ngày Sinh</th>
                 <th>Giới Tính</th>
-                <th>Cấp</th>
-                <th>Quyền</th>
-            </tr>
+                <th>Quyền</th> <th>Cấp</th>   </tr>
         </thead>
         <tbody id="memberTable"></tbody>
     </table>
