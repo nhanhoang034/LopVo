@@ -99,30 +99,6 @@ document.addEventListener("DOMContentLoaded", function () {
         return originalRole;
     }
 
-    // Hàm tạo nút copy dùng chung cho cả Họ Tên và Mã số
-    function createCopyButton(textToCopy) {
-        const copyBtn = document.createElement("button");
-        copyBtn.textContent = "📋";
-        copyBtn.title = "Sao chép";
-        copyBtn.style.marginLeft = "10px";
-        copyBtn.style.cursor = "pointer";
-        copyBtn.style.border = "none";
-        copyBtn.style.background = "transparent";
-        copyBtn.style.fontSize = "16px";
-        copyBtn.style.verticalAlign = "middle";
-
-        copyBtn.onclick = function (e) {
-            e.stopPropagation();
-            navigator.clipboard.writeText(textToCopy).then(() => {
-                copyBtn.textContent = "✅";
-                setTimeout(() => { copyBtn.textContent = "📋"; }, 1200);
-            }).catch(err => {
-                console.error("Lỗi copy:", err);
-            });
-        };
-        return copyBtn;
-    }
-
     function renderTable(filteredData) {
         tableBody.innerHTML = "";
         filteredData.forEach(row => {
@@ -170,25 +146,39 @@ document.addEventListener("DOMContentLoaded", function () {
             // Tính toán giá trị cột Quyền mới từ Cấp cũ
             const permissionValue = calculatePermission(normRole, role);
 
-            // Tạo mảng gồm 6 phần tử tương ứng với 6 cột trên giao diện
-            const cells = [name, code, dob, gender, role, permissionValue];
+            // Cấu trúc mảng hiển thị mới gồm 7 phần tử (thêm chỗ cho nút copy ở index số 2)
+            const cells = [name, code, "EXCEL_COPY_COLUMN", dob, gender, role, permissionValue];
             
             cells.forEach((text, index) => {
                 const td = document.createElement("td");
                 td.style.backgroundColor = bgColor;
                 td.style.color = textColor;
 
-                if (index === 0) { // Cột Họ và Tên: Hiển thị chữ + nút copy nhanh
-                    const nameSpan = document.createElement("span");
-                    nameSpan.textContent = text;
-                    td.appendChild(nameSpan);
-                    td.appendChild(createCopyButton(text));
-                } else if (index === 1) { // Cột Mã Hội Viên: Hiển thị chữ + nút copy nhanh
-                    const codeSpan = document.createElement("span");
-                    codeSpan.textContent = text;
-                    td.appendChild(codeSpan);
-                    td.appendChild(createCopyButton(text));
+                if (index === 2) { 
+                    // Tạo cột nút Copy ở giữa Mã Hội Viên và Ngày Sinh
+                    const copyBtn = document.createElement("button");
+                    copyBtn.textContent = "📋";
+                    copyBtn.title = "Copy Tên và Mã (Paste vào Excel tự tách làm 2 cột)";
+                    copyBtn.style.cursor = "pointer";
+                    copyBtn.style.border = "none";
+                    copyBtn.style.background = "transparent";
+                    copyBtn.style.fontSize = "16px";
+                    copyBtn.style.verticalAlign = "middle";
+
+                    copyBtn.onclick = function (e) {
+                        e.stopPropagation();
+                        // Gom Tên và Mã cách nhau bằng dấu Tab (\t) để Excel hiểu là 2 cột riêng biệt
+                        const combinedText = `${name}\t${code}`;
+                        navigator.clipboard.writeText(combinedText).then(() => {
+                            copyBtn.textContent = "✅";
+                            setTimeout(() => { copyBtn.textContent = "📋"; }, 1200);
+                        }).catch(err => {
+                            console.error("Lỗi copy:", err);
+                        });
+                    };
+                    td.appendChild(copyBtn);
                 } else {
+                    // Các cột văn bản hiển thị bình thường (Không gắn thêm nút copy lẻ tẻ)
                     td.textContent = text;
                 }
                 tr.appendChild(td);
