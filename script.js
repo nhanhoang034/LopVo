@@ -97,23 +97,38 @@ document.addEventListener("DOMContentLoaded", function () {
             let bgColor = "#cccccc";
             let textColor = "#000000";
 
-            // Logic màu sắc theo cấp bậc
+            // Logic màu sắc chuẩn theo quy định hệ thống đai võ thuật
             switch (normRole) {
-                case "cap 10": bgColor = "#eeeeee"; break;
-                case "cap 9":  bgColor = "#FFFF00"; break;
-                case "cap 8":  bgColor = "#ff9d0aff";break;
-                case "cap 7":  bgColor = "#66cc66";  break;
-                case "cap 6":  bgColor = "#3399ff";  break;
-                case "cap 5":  bgColor = "#c800ffff";break;
-                case "cap 4":  bgColor = "#FF0000";  break;
-                case "cap 3":  bgColor = "#DD0000";  break;
-                case "cap 2":  bgColor = "#AA0000";  break;
-                case "cap 1":  bgColor = "#550000";  break;
-                case "1 dang": bgColor = "#b087d8ff"; break;
-                case "2 dang": bgColor = "#62358fff"; break;
-                case "3 dang": bgColor = "#402060";   break;
-                case "gv":     bgColor = "#000000"; textColor = "#EEEEEE"; break;
-                default:       bgColor = "#cccccc"; break;
+                case "cap 10": 
+                    bgColor = "#ffffff"; textColor = "#000000"; break; // Trắng
+                case "cap 9": 
+                    bgColor = "#fffde0"; textColor = "#bda000"; break; // Trắng 1 gạch vàng
+                case "cap 8": 
+                    bgColor = "#fff9a6"; textColor = "#bda000"; break; // Trắng 2 gạch vàng
+                case "cap 7": 
+                    bgColor = "#ffea00"; textColor = "#000000"; break; // Vàng
+                case "cap 6": 
+                    bgColor = "#2ecc71"; textColor = "#ffffff"; break; // Xanh lá
+                case "cap 5": 
+                    bgColor = "#3498db"; textColor = "#ffffff"; break; // Xanh dương
+                case "cap 4": 
+                    bgColor = "#e74c3c"; textColor = "#ffffff"; break; // Đỏ
+                case "cap 3": 
+                    bgColor = "#d63031"; textColor = "#ffea00"; break; // Đỏ 1 gạch vàng
+                case "cap 2": 
+                    bgColor = "#b21f1f"; textColor = "#ffea00"; break; // Đỏ 2 gạch vàng
+                case "cap 1": 
+                    bgColor = "#8b0000"; textColor = "#ffea00"; break; // Đỏ 3 gạch vàng
+                case "1 dang": 
+                    bgColor = "#e0b0ff"; textColor = "#000000"; break; // Tím nhạt
+                case "2 dang": 
+                    bgColor = "#702963"; textColor = "#ffffff"; break; // Tím đậm
+                case "4 dang": 
+                    bgColor = "#111111"; textColor = "#ffffff"; break; // Đen
+                case "gv":     
+                    bgColor = "#000000"; textColor = "#ffffff"; break; // GV: Đen
+                default:       
+                    bgColor = "#cccccc"; textColor = "#000000"; break;
             }
 
             const cells = [name, code, dob, gender, role];
@@ -126,7 +141,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     td.textContent = text;
                     td.style.cursor = "pointer";
                     td.onclick = () => { modalImg.src = img; imageModal.style.display = "flex"; };
-                } else if (index === 1) { // Cột Mã Hội Viên: Thêm nút copy nhanh
+                } else if (index === 1) { // Cột Mã Hội Viên: Có nút copy nhanh
                     const codeSpan = document.createElement("span");
                     codeSpan.textContent = text;
                     td.appendChild(codeSpan);
