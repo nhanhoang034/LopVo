@@ -7,19 +7,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const genderFilter = document.getElementById("genderFilter");
     const yearFilter = document.getElementById("yearFilter");
 
-    // Tạo Modal ảnh
-    const imageModal = document.createElement("div");
-    imageModal.id = "imageModal";
-    const closeBtn = document.createElement("span");
-    closeBtn.id = "closeBtn";
-    closeBtn.textContent = "×";
-    imageModal.appendChild(closeBtn);
-    const modalImg = document.createElement("img");
-    imageModal.appendChild(modalImg);
-    document.body.appendChild(imageModal);
-
-    modalImg.onerror = function () { this.src = "default.jpg"; };
-    closeBtn.addEventListener("click", function () { imageModal.style.display = "none"; });
+    // Đã loại bỏ Modal ảnh theo yêu cầu
 
     async function loadCSV() {
         try {
@@ -30,12 +18,8 @@ document.addEventListener("DOMContentLoaded", function () {
             data = csvData.split(/\r?\n/)
                 .filter(line => line.trim() !== "")
                 .map(line => {
-                    const cells = line.split(',').map(cell => cell.trim());
-                    // Cấu trúc: [Tên, Mã, NgàySinh, GiớiTính, Quyền, LinkẢnh]
-                    if (cells.length < 6 || cells[5] === "") {
-                        cells[5] = "default.jpg";
-                    }
-                    return cells;
+                    return line.split(',').map(cell => cell.trim());
+                    // Cấu trúc: [Tên, Mã, NgàySinh, GiớiTính, Cấp bậc cũ]
                 });
 
             populateDynamicFilters(data); 
@@ -45,7 +29,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Tự động lấy danh sách Quyền và Năm sinh có trong dữ liệu (Hỗ trợ cả dấu - và /)
+    // Tự động lấy danh sách Cấp và Năm sinh có trong dữ liệu
     function populateDynamicFilters(memberData) {
         const roles = new Set();
         const years = new Set();
@@ -56,16 +40,16 @@ document.addEventListener("DOMContentLoaded", function () {
             if (role) roles.add(role);
             
             if (dob) {
-                // Tách chuỗi theo dấu gạch ngang (-) hoặc gạch chéo (/)
                 const parts = dob.split(/[-/]/);
                 const year = parts[parts.length - 1];
-                if (year && year.trim().length === 4) { // Đảm bảo lấy đúng năm 4 chữ số
+                if (year && year.trim().length === 4) {
                     years.add(year.trim());
                 }
             }
         });
 
-        // Đổ dữ liệu vào ô chọn Quyền
+        // Đổ dữ liệu vào ô chọn Cấp
+        roleFilter.innerHTML = '<option value="">Tất cả cấp</option>';
         Array.from(roles).sort().forEach(role => {
             const option = document.createElement("option");
             option.value = role;
@@ -74,6 +58,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
 
         // Đổ dữ liệu vào ô chọn Năm sinh (giảm dần)
+        yearFilter.innerHTML = '<option value="">Tất cả năm</option>';
         Array.from(years).sort((a, b) => b - a).forEach(year => {
             const option = document.createElement("option");
             option.value = year;
@@ -87,11 +72,62 @@ document.addEventListener("DOMContentLoaded", function () {
         return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[đĐ]/g, "d").replace(/\s+/g, " ").trim().toLowerCase();
     }
 
+    // Hàm tính toán Quyền tự động: Quyền = 9 - Cấp
+    function calculatePermission(normRole, originalRole) {
+        if (normRole === "gv") return "GV";
+        if (normRole === "4 dang") return "12"; // 8 + 4
+        
+        // Xử lý chuỗi đẳng (Ví dụ: "1 dang", "2 dang")
+        if (normRole.includes("dang")) {
+            const dangMatch = normRole.match(/(\d+)\s*dang/);
+            if (dangMatch) {
+                const dangNum = parseInt(dangMatch[1]);
+                return (8 + dangNum).toString(); // 1 đẳng -> 9, 2 đẳng -> 10
+            }
+        }
+
+        // Xử lý chuỗi cấp (Ví dụ: "cap 10", "cap 3")
+        if (normRole.includes("cap")) {
+            const capMatch = normRole.match(/cap\s*(\d+)/);
+            if (capMatch) {
+                const capNum = parseInt(capMatch[1]);
+                if (capNum === 10 || capNum === 9) return "0";
+                return (9 - capNum).toString(); // Cấp 8 -> 1, Cấp 2 -> 7, Cấp 1 -> 8
+            }
+        }
+
+        return originalRole;
+    }
+
+    // Hàm tạo nút copy dùng chung cho cả Họ Tên và Mã số
+    function createCopyButton(textToCopy) {
+        const copyBtn = document.createElement("button");
+        copyBtn.textContent = "📋";
+        copyBtn.title = "Sao chép";
+        copyBtn.style.marginLeft = "10px";
+        copyBtn.style.cursor = "pointer";
+        copyBtn.style.border = "none";
+        copyBtn.style.background = "transparent";
+        copyBtn.style.fontSize = "16px";
+        copyBtn.style.verticalAlign = "middle";
+
+        copyBtn.onclick = function (e) {
+            e.stopPropagation();
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                copyBtn.textContent = "✅";
+                setTimeout(() => { copyBtn.textContent = "📋"; }, 1200);
+            }).catch(err => {
+                console.error("Lỗi copy:", err);
+            });
+        };
+        return copyBtn;
+    }
+
     function renderTable(filteredData) {
         tableBody.innerHTML = "";
         filteredData.forEach(row => {
             const tr = document.createElement("tr");
-            const [name, code, dob, gender, role, img] = row;
+            const [name, code, dob, gender, role] = row;
             const normRole = normalize(role);
             
             let bgColor = "#cccccc";
@@ -131,40 +167,27 @@ document.addEventListener("DOMContentLoaded", function () {
                     bgColor = "#cccccc"; textColor = "#000000"; break;
             }
 
-            const cells = [name, code, dob, gender, role];
+            // Tính toán giá trị cột Quyền mới từ Cấp cũ
+            const permissionValue = calculatePermission(normRole, role);
+
+            // Tạo mảng gồm 6 phần tử tương ứng với 6 cột trên giao diện
+            const cells = [name, code, dob, gender, role, permissionValue];
+            
             cells.forEach((text, index) => {
                 const td = document.createElement("td");
                 td.style.backgroundColor = bgColor;
                 td.style.color = textColor;
 
-                if (index === 0) { // Cột Họ và Tên: Click xem ảnh
-                    td.textContent = text;
-                    td.style.cursor = "pointer";
-                    td.onclick = () => { modalImg.src = img; imageModal.style.display = "flex"; };
-                } else if (index === 1) { // Cột Mã Hội Viên: Có nút copy nhanh
+                if (index === 0) { // Cột Họ và Tên: Hiển thị chữ + nút copy nhanh
+                    const nameSpan = document.createElement("span");
+                    nameSpan.textContent = text;
+                    td.appendChild(nameSpan);
+                    td.appendChild(createCopyButton(text));
+                } else if (index === 1) { // Cột Mã Hội Viên: Hiển thị chữ + nút copy nhanh
                     const codeSpan = document.createElement("span");
                     codeSpan.textContent = text;
                     td.appendChild(codeSpan);
-
-                    const copyBtn = document.createElement("button");
-                    copyBtn.textContent = "📋";
-                    copyBtn.title = "Sao chép mã";
-                    copyBtn.style.marginLeft = "10px";
-                    copyBtn.style.cursor = "pointer";
-                    copyBtn.style.border = "none";
-                    copyBtn.style.background = "transparent";
-                    copyBtn.style.fontSize = "16px";
-                    copyBtn.style.verticalAlign = "middle";
-
-                    copyBtn.onclick = function () {
-                        navigator.clipboard.writeText(text).then(() => {
-                            copyBtn.textContent = "✅";
-                            setTimeout(() => { copyBtn.textContent = "📋"; }, 1200);
-                        }).catch(err => {
-                            console.error("Lỗi copy:", err);
-                        });
-                    };
-                    td.appendChild(copyBtn);
+                    td.appendChild(createCopyButton(text));
                 } else {
                     td.textContent = text;
                 }
@@ -183,7 +206,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const filtered = data.filter(row => {
             const [name, code, dob, gender, role] = row;
-            // Tách chuỗi hỗ trợ cả dấu - và /
             const parts = dob ? dob.split(/[-/]/) : [];
             const yearOfBirth = parts.length > 0 ? parts[parts.length - 1].trim() : "";
 
