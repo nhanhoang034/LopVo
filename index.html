@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Danh Sách Lớp Võ</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body>
     <h2>Danh Sách Tạo Bởi Nhân Hoàng</h2>
@@ -40,16 +41,22 @@
         </div>
     </div>
 
-    <div class="info-bar">
+    <div class="info-bar" style="display: flex; justify-content: space-between; width: 100%; max-width: 1000px; align-items: center; margin-bottom: 10px;">
         <span id="totalCount">Hiện có: 0 học viên</span>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <span id="selectedCount" style="color: #0088cc;">Đã chọn: 0 học viên</span>
+            <button id="exportBtn" style="padding: 6px 12px; font-size: 16px; background-color: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
+                💚 Xuất Excel
+            </button>
+        </div>
     </div>
 
     <table>
         <thead>
             <tr>
-                <th>Họ và Tên</th>
+                <th style="width: 40px;">Chọn</th> <th>Họ và Tên</th>
                 <th>Mã Hội Viên</th>
-                <th>Copy</th> <!-- Thêm cột Copy ở giữa Mã Hội Viên và Ngày Sinh -->
+                <th>Copy</th>
                 <th>Ngày Sinh</th>
                 <th>Giới Tính</th>
                 <th>Cấp</th>

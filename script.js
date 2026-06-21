@@ -1,13 +1,16 @@
 document.addEventListener("DOMContentLoaded", function () {
     let data = [];
+    // Set này dùng để lưu trữ Mã Hội Viên của những người đã được tick (đảm bảo không bị mất khi tìm kiếm/lọc)
+    let selectedMembers = new Set(); 
+    
     const totalCount = document.getElementById("totalCount");
+    const selectedCount = document.getElementById("selectedCount");
+    const exportBtn = document.getElementById("exportBtn");
     const tableBody = document.getElementById("memberTable");
     const searchInput = document.getElementById("searchInput");
     const roleFilter = document.getElementById("roleFilter");
     const genderFilter = document.getElementById("genderFilter");
     const yearFilter = document.getElementById("yearFilter");
-
-    // Đã loại bỏ Modal ảnh theo yêu cầu
 
     async function loadCSV() {
         try {
@@ -19,7 +22,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 .filter(line => line.trim() !== "")
                 .map(line => {
                     return line.split(',').map(cell => cell.trim());
-                    // Cấu trúc: [Tên, Mã, NgàySinh, GiớiTính, Cấp bậc cũ]
                 });
 
             populateDynamicFilters(data); 
@@ -29,7 +31,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // Tự động lấy danh sách Cấp và Năm sinh có trong dữ liệu
     function populateDynamicFilters(memberData) {
         const roles = new Set();
         const years = new Set();
@@ -48,7 +49,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
 
-        // Đổ dữ liệu vào ô chọn Cấp
         roleFilter.innerHTML = '<option value="">Tất cả cấp</option>';
         Array.from(roles).sort().forEach(role => {
             const option = document.createElement("option");
@@ -57,7 +57,6 @@ document.addEventListener("DOMContentLoaded", function () {
             roleFilter.appendChild(option);
         });
 
-        // Đổ dữ liệu vào ô chọn Năm sinh (giảm dần)
         yearFilter.innerHTML = '<option value="">Tất cả năm</option>';
         Array.from(years).sort((a, b) => b - a).forEach(year => {
             const option = document.createElement("option");
@@ -72,31 +71,32 @@ document.addEventListener("DOMContentLoaded", function () {
         return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[đĐ]/g, "d").replace(/\s+/g, " ").trim().toLowerCase();
     }
 
-    // Hàm tính toán Quyền tự động: Quyền = 9 - Cấp
     function calculatePermission(normRole, originalRole) {
         if (normRole === "gv") return "GV";
-        if (normRole === "4 dang") return "12"; // 8 + 4
+        if (normRole === "4 dang") return "12";
         
-        // Xử lý chuỗi đẳng (Ví dụ: "1 dang", "2 dang")
         if (normRole.includes("dang")) {
             const dangMatch = normRole.match(/(\d+)\s*dang/);
             if (dangMatch) {
                 const dangNum = parseInt(dangMatch[1]);
-                return (8 + dangNum).toString(); // 1 đẳng -> 9, 2 đẳng -> 10
+                return (8 + dangNum).toString();
             }
         }
 
-        // Xử lý chuỗi cấp (Ví dụ: "cap 10", "cap 3")
         if (normRole.includes("cap")) {
             const capMatch = normRole.match(/cap\s*(\d+)/);
             if (capMatch) {
                 const capNum = parseInt(capMatch[1]);
                 if (capNum === 10 || capNum === 9) return "0";
-                return (9 - capNum).toString(); // Cấp 8 -> 1, Cấp 2 -> 7, Cấp 1 -> 8
+                return (9 - capNum).toString();
             }
         }
 
         return originalRole;
+    }
+
+    function updateSelectedCount() {
+        selectedCount.textContent = `Đã chọn: ${selectedMembers.size} học viên`;
     }
 
     function renderTable(filteredData) {
@@ -109,53 +109,58 @@ document.addEventListener("DOMContentLoaded", function () {
             let bgColor = "#cccccc";
             let textColor = "#000000";
 
-            // Logic màu sắc chuẩn theo quy định hệ thống đai võ thuật
             switch (normRole) {
-                case "cap 10": 
-                    bgColor = "#ffffff"; textColor = "#000000"; break; // Trắng
-                case "cap 9": 
-                    bgColor = "#fffde0"; textColor = "#bda000"; break; // Trắng 1 gạch vàng
-                case "cap 8": 
-                    bgColor = "#fff9a6"; textColor = "#bda000"; break; // Trắng 2 gạch vàng
-                case "cap 7": 
-                    bgColor = "#ffea00"; textColor = "#000000"; break; // Vàng
-                case "cap 6": 
-                    bgColor = "#2ecc71"; textColor = "#ffffff"; break; // Xanh lá
-                case "cap 5": 
-                    bgColor = "#3498db"; textColor = "#ffffff"; break; // Xanh dương
-                case "cap 4": 
-                    bgColor = "#e74c3c"; textColor = "#ffffff"; break; // Đỏ
-                case "cap 3": 
-                    bgColor = "#d63031"; textColor = "#ffea00"; break; // Đỏ 1 gạch vàng
-                case "cap 2": 
-                    bgColor = "#b21f1f"; textColor = "#ffea00"; break; // Đỏ 2 gạch vàng
-                case "cap 1": 
-                    bgColor = "#8b0000"; textColor = "#ffea00"; break; // Đỏ 3 gạch vàng
-                case "1 dang": 
-                    bgColor = "#e0b0ff"; textColor = "#000000"; break; // Tím nhạt
-                case "2 dang": 
-                    bgColor = "#702963"; textColor = "#ffffff"; break; // Tím đậm
-                case "4 dang": 
-                    bgColor = "#111111"; textColor = "#ffffff"; break; // Đen
-                case "gv":     
-                    bgColor = "#000000"; textColor = "#ffffff"; break; // GV: Đen
-                default:       
-                    bgColor = "#cccccc"; textColor = "#000000"; break;
+                case "cap 10": bgColor = "#ffffff"; textColor = "#000000"; break;
+                case "cap 9":  bgColor = "#fffde0"; textColor = "#bda000"; break;
+                case "cap 8":  bgColor = "#fff9a6"; textColor = "#bda000"; break;
+                case "cap 7":  bgColor = "#ffea00"; textColor = "#000000"; break;
+                case "cap 6":  bgColor = "#2ecc71"; textColor = "#ffffff"; break;
+                case "cap 5":  bgColor = "#3498db"; textColor = "#ffffff"; break;
+                case "cap 4":  bgColor = "#e74c3c"; textColor = "#ffffff"; break;
+                case "cap 3":  bgColor = "#d63031"; textColor = "#ffea00"; break;
+                case "cap 2":  bgColor = "#b21f1f"; textColor = "#ffea00"; break;
+                case "cap 1":  bgColor = "#8b0000"; textColor = "#ffea00"; break;
+                case "1 dang": bgColor = "#e0b0ff"; textColor = "#000000"; break;
+                case "2 dang": bgColor = "#702963"; textColor = "#ffffff"; break;
+                case "4 dang": bgColor = "#111111"; textColor = "#ffffff"; break;
+                case "gv":     bgColor = "#000000"; textColor = "#ffffff"; break;
+                default:       bgColor = "#cccccc"; textColor = "#000000"; break;
             }
 
-            // Tính toán giá trị cột Quyền mới từ Cấp cũ
             const permissionValue = calculatePermission(normRole, role);
 
-            // Cấu trúc mảng hiển thị mới gồm 7 phần tử (thêm chỗ cho nút copy ở index số 2)
-            const cells = [name, code, "EXCEL_COPY_COLUMN", dob, gender, role, permissionValue];
+            // Mảng hiển thị 8 cột: [Checkbox, Tên, Mã, Nút_Copy, NgàySinh, GiớiTính, Cấp, Quyền]
+            const cells = ["CHECKBOX_COLUMN", name, code, "EXCEL_COPY_COLUMN", dob, gender, role, permissionValue];
             
             cells.forEach((text, index) => {
                 const td = document.createElement("td");
                 td.style.backgroundColor = bgColor;
                 td.style.color = textColor;
 
-                if (index === 2) { 
-                    // Tạo cột nút Copy ở giữa Mã Hội Viên và Ngày Sinh
+                if (index === 0) {
+                    // Cột 0: Ô Checkbox chọn học viên
+                    const checkbox = document.createElement("input");
+                    checkbox.type = "checkbox";
+                    checkbox.style.transform = "scale(1.3)";
+                    checkbox.style.cursor = "pointer";
+                    
+                    // Nếu Mã hội viên này đã nằm trong danh sách được chọn trước đó thì giữ trạng thái tích chọn
+                    if (selectedMembers.has(code)) {
+                        checkbox.checked = true;
+                    }
+
+                    checkbox.addEventListener("change", function () {
+                        if (checkbox.checked) {
+                            selectedMembers.add(code);
+                        } else {
+                            selectedMembers.delete(code);
+                        }
+                        updateSelectedCount();
+                    });
+
+                    td.appendChild(checkbox);
+                } else if (index === 3) { 
+                    // Cột 3: Nút Copy nhanh tổ hợp Tab phục vụ Excel lẻ
                     const copyBtn = document.createElement("button");
                     copyBtn.textContent = "📋";
                     copyBtn.title = "Copy Tên và Mã (Paste vào Excel tự tách làm 2 cột)";
@@ -163,11 +168,9 @@ document.addEventListener("DOMContentLoaded", function () {
                     copyBtn.style.border = "none";
                     copyBtn.style.background = "transparent";
                     copyBtn.style.fontSize = "16px";
-                    copyBtn.style.verticalAlign = "middle";
 
                     copyBtn.onclick = function (e) {
                         e.stopPropagation();
-                        // Gom Tên và Mã cách nhau bằng dấu Tab (\t) để Excel hiểu là 2 cột riêng biệt
                         const combinedText = `${name}\t${code}`;
                         navigator.clipboard.writeText(combinedText).then(() => {
                             copyBtn.textContent = "✅";
@@ -178,7 +181,6 @@ document.addEventListener("DOMContentLoaded", function () {
                     };
                     td.appendChild(copyBtn);
                 } else {
-                    // Các cột văn bản hiển thị bình thường (Không gắn thêm nút copy lẻ tẻ)
                     td.textContent = text;
                 }
                 tr.appendChild(td);
@@ -208,6 +210,40 @@ document.addEventListener("DOMContentLoaded", function () {
         });
         renderTable(filtered);
     }
+
+    // XỬ LÝ LOGIC XUẤT EXCEL FILE (.xlsx) CHUẨN ĐỊNH DẠNG
+    exportBtn.addEventListener("click", function () {
+        if (selectedMembers.size === 0) {
+            alert("Vui lòng tick chọn ít nhất 1 học viên để xuất file Excel!");
+            return;
+        }
+
+        // Lọc lấy danh sách dữ liệu gốc dựa trên các Mã hội viên đã được tick chọn
+        const exportData = [];
+        let stt = 1;
+
+        data.forEach(row => {
+            const [name, code] = row;
+            if (selectedMembers.has(code)) {
+                exportData.push({
+                    "STT": stt++,
+                    "Họ và Tên": name,
+                    "Mã Hội Viên": code
+                });
+            }
+        });
+
+        // Sử dụng thư viện SheetJS cấu trúc file Excel đổ dữ liệu vào
+        const worksheet = XLSX.utils.json_to_sheet(exportData);
+        const workbook = XLSX.utils.book_new();
+        XLSX.utils.book_append_sheet(workbook, worksheet, "Học Viên Được Chọn");
+
+        // Tự động căn chỉnh độ rộng cột Excel cơ bản cho đẹp mắt
+        worksheet["!cols"] = [{ wch: 8 }, { wch: 30 }, { wch: 20 }];
+
+        // Xuất file và kích hoạt lệnh tải về trên máy tính
+        XLSX.writeFile(workbook, "hoc_vien_duoc_chon.xlsx");
+    });
 
     [searchInput, roleFilter, genderFilter, yearFilter].forEach(el => {
         el.addEventListener(el.tagName === "INPUT" ? "input" : "change", filterAndRender);
