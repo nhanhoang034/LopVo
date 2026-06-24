@@ -5,6 +5,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const totalCount = document.getElementById("totalCount");
     const selectedCount = document.getElementById("selectedCount");
     const exportBtn = document.getElementById("exportBtn");
+    const exportTxtBtn = document.getElementById("exportTxtBtn"); // Định nghĩa nút Text mới
     const resetBtn = document.getElementById("resetBtn");
     const tableBody = document.getElementById("memberTable");
     const searchInput = document.getElementById("searchInput");
@@ -219,9 +220,39 @@ document.addEventListener("DOMContentLoaded", function () {
         if (confirm("Bạn có chắc chắn muốn bỏ chọn tất cả học viên không?")) {
             selectedMembers.clear();
             updateSelectedCount();
-            // Vẽ lại bảng hiện tại để cập nhật trạng thái bỏ tích hiển thị trên màn hình
             filterAndRender(); 
         }
+    });
+
+    // LOGIC XUẤT FILE TEXT (.txt): Chỉ lấy mã hội viên, cách nhau bằng khoảng trắng
+    exportTxtBtn.addEventListener("click", function () {
+        if (selectedMembers.size === 0) {
+            alert("Chọn ít nhất 1 học viên để xuất file text!");
+            return;
+        }
+
+        const selectedCodes = [];
+        
+        // Quét qua danh sách dữ liệu gốc để giữ đúng thứ tự sắp xếp hiện tại
+        data.forEach(row => {
+            const code = row[1];
+            if (selectedMembers.has(code)) {
+                selectedCodes.push(code);
+            }
+        });
+
+        // Nối các mã với nhau bằng 1 dấu cách (khoảng trắng)
+        const txtContent = selectedCodes.join(" ");
+
+        // Tạo đối tượng Blob để tải file text trực tiếp trên trình duyệt web tĩnh
+        const blob = new Blob([txtContent], { type: "text/plain;charset=utf-8" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = "Ma_Hoi_Vien.txt";
+        
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
     });
 
     // LOGIC XUẤT FILE EXCEL (.xlsx) ĐẦY ĐỦ 5 CỘT THEO ĐÚNG THỨ TỰ
@@ -240,7 +271,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 const normRole = normalize(role);
                 const permissionValue = calculatePermission(normRole, role);
 
-                // Cấu trúc map dữ liệu thành 5 cột chính xác
                 exportData.push({
                     "STT": stt++,
                     "Họ và Tên": name,
@@ -251,12 +281,10 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         });
 
-        // Đổ dữ liệu vào file Excel thông qua SheetJS
         const worksheet = XLSX.utils.json_to_sheet(exportData);
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "Danh Sách");
 
-        // Cấu hình độ rộng cơ bản cho 5 cột trong Excel (STT, Tên, Mã, Quyền, Cấp)
         worksheet["!cols"] = [
             { wch: 8 },  // STT
             { wch: 30 }, // Họ và Tên
