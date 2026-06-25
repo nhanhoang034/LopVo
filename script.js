@@ -13,13 +13,51 @@ document.addEventListener("DOMContentLoaded", function () {
     const genderFilter = document.getElementById("genderFilter");
     const yearFilter = document.getElementById("yearFilter");
 
-    async function loadCSV() {
-        try {
-            const response = await fetch('data.csv');
-            const csvData = await response.text();
-            if (!csvData) return;
+    // Các phần tử bảo mật vòng ngoài
+    const lockScreen = document.getElementById("lockScreen");
+    const webPasswordInput = document.getElementById("webPasswordInput");
+    const unlockBtn = document.getElementById("unlockBtn");
 
-            data = csvData.split(/\r?\n/)
+    // Các phần tử công cụ mã hóa cho Admin
+    const adminCsvFileInput = document.getElementById("adminCsvFileInput");
+    const adminSecretKeyInput = document.getElementById("adminSecretKeyInput");
+    const adminEncryptBtn = document.getElementById("adminEncryptBtn");
+
+    // SỰ KIỆN BẤM NÚT MỞ KHÓA WEB
+    unlockBtn.addEventListener("click", performDecryption);
+    webPasswordInput.addEventListener("keypress", function(e) {
+        if (e.key === "Enter") performDecryption();
+    });
+
+    async function performDecryption() {
+        const password = webPasswordInput.value.trim();
+        if (!password) {
+            alert("Vui lòng nhập mật khẩu!");
+            return;
+        }
+
+        try {
+            // Tải file dữ liệu đã được mã hóa an toàn trên server GitHub về máy
+            const response = await fetch('data.encrypted');
+            if (!response.ok) {
+                alert("Không tìm thấy file dữ liệu đã mã hóa (data.encrypted) trên GitHub!");
+                return;
+            }
+            const encryptedData = await response.text();
+
+            // Dùng mật khẩu người dùng gõ vào để thực hiện giải mã chuỗi bằng thuật toán AES
+            const bytes = CryptoJS.AES.decrypt(encryptedData, password);
+            const decryptedText = bytes.toString(CryptoJS.enc.Utf8);
+
+            if (!decryptedText) {
+                alert("Mật khẩu sai! Không thể giải mã dữ liệu.");
+                return;
+            }
+
+            // Giải mã thành công -> Khóa màn hình ẩn đi, bóc tách chuỗi CSV thành mảng dữ liệu như cũ
+            lockScreen.style.display = "none";
+
+            data = decryptedText.split(/\r?\n/)
                 .filter(line => line.trim() !== "")
                 .map(line => {
                     return line.split(',').map(cell => cell.trim());
@@ -27,8 +65,10 @@ document.addEventListener("DOMContentLoaded", function () {
 
             populateDynamicFilters(data); 
             renderTable(data);
+
         } catch (error) {
-            console.error("Lỗi tải CSV:", error);
+            alert("Mật khẩu không chính xác hoặc dữ liệu bị lỗi!");
+            console.error(error);
         }
     }
 
@@ -139,7 +179,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (index === 2) { 
                     const copyBtn = document.createElement("button");
                     copyBtn.textContent = "Copy";
-                    copyBtn.title = "Copy Tên và Mã Hội Viên";
                     copyBtn.style.cursor = "pointer";
                     copyBtn.style.border = "1px solid #ccc";
                     copyBtn.style.background = "#fff";
@@ -272,5 +311,36 @@ document.addEventListener("DOMContentLoaded", function () {
         el.addEventListener(el.tagName === "INPUT" ? "input" : "change", filterAndRender);
     });
 
-    loadCSV();
+    // ==========================================
+    // LOGIC CÔNG CỤ MÃ HÓA FILE CHO ADMIN
+    // ==========================================
+    adminEncryptBtn.addEventListener("click", function () {
+        const file = adminCsvFileInput.files[0];
+        const secretKey = adminSecretKeyInput.value.trim();
+
+        if (!file) {
+            alert("Vui lòng chọn file data.csv gốc!");
+            return;
+        }
+        if (!secretKey) {
+            alert("Vui lòng nhập mật khẩu muốn đặt để khóa file!");
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const csvText = e.target.result;
+            
+            // Thực hiện mã hóa toàn bộ chuỗi văn bản của file CSV bằng mật khẩu bí mật
+            const encryptedStr = CryptoJS.AES.encrypt(csvText, secretKey).toString();
+
+            // Tạo file data.encrypted và kích hoạt tải xuống máy tính của bạn
+            const blob = new Blob([encryptedStr], { type: "text/plain;charset=utf-8" });
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = "data.encrypted";
+            link.click();
+        };
+        reader.readAsText(file);
+    });
 });
