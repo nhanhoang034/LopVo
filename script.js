@@ -1,11 +1,11 @@
 document.addEventListener("DOMContentLoaded", function () {
     let data = [];
-    let selectedMembers = new Set(); // Lưu trữ các Mã Hội Viên đã được chọn
+    let selectedMembers = new Set(); 
     
     const totalCount = document.getElementById("totalCount");
     const selectedCount = document.getElementById("selectedCount");
     const exportBtn = document.getElementById("exportBtn");
-    const exportTxtBtn = document.getElementById("exportTxtBtn"); // Định nghĩa nút Text mới
+    const exportTxtBtn = document.getElementById("exportTxtBtn"); 
     const resetBtn = document.getElementById("resetBtn");
     const tableBody = document.getElementById("memberTable");
     const searchInput = document.getElementById("searchInput");
@@ -72,7 +72,6 @@ document.addEventListener("DOMContentLoaded", function () {
         return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "").replace(/[đĐ]/g, "d").replace(/\s+/g, " ").trim().toLowerCase();
     }
 
-    // Hàm tính toán Quyền tự động: Quyền = 9 - Cấp
     function calculatePermission(normRole, originalRole) {
         if (normRole === "gv") return "GV";
         if (normRole === "4 dang") return "12";
@@ -130,9 +129,6 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             const permissionValue = calculatePermission(normRole, role);
-
-            // Thứ tự hiển thị 8 cột trên web: 
-            // [Tên, Mã, Nút_Copy, Checkbox, NgàySinh, GiớiTính, Quyền, Cấp]
             const cells = [name, code, "EXCEL_COPY_COLUMN", "CHECKBOX_COLUMN", dob, gender, permissionValue, role];
             
             cells.forEach((text, index) => {
@@ -141,28 +137,28 @@ document.addEventListener("DOMContentLoaded", function () {
                 td.style.color = textColor;
 
                 if (index === 2) { 
-                    // Cột 2: Nút Copy nhanh tổ hợp Tab phục vụ Excel
                     const copyBtn = document.createElement("button");
-                    copyBtn.textContent = "📋";
+                    copyBtn.textContent = "Copy";
                     copyBtn.title = "Copy Tên và Mã Hội Viên";
                     copyBtn.style.cursor = "pointer";
-                    copyBtn.style.border = "none";
-                    copyBtn.style.background = "transparent";
-                    copyBtn.style.fontSize = "16px";
+                    copyBtn.style.border = "1px solid #ccc";
+                    copyBtn.style.background = "#fff";
+                    copyBtn.style.borderRadius = "3px";
+                    copyBtn.style.padding = "2px 6px";
+                    copyBtn.style.fontSize = "15px";
 
                     copyBtn.onclick = function (e) {
                         e.stopPropagation();
                         const combinedText = `${name}\t${code}`;
                         navigator.clipboard.writeText(combinedText).then(() => {
-                            copyBtn.textContent = "✅";
-                            setTimeout(() => { copyBtn.textContent = "📋"; }, 1200);
+                            copyBtn.textContent = "Done";
+                            setTimeout(() => { copyBtn.textContent = "Copy"; }, 1200);
                         }).catch(err => {
                             console.error("Lỗi copy:", err);
                         });
                     };
                     td.appendChild(copyBtn);
                 } else if (index === 3) {
-                    // Cột 3: Ô Checkbox chọn học viên (Nằm giữa cột Copy và Ngày sinh)
                     const checkbox = document.createElement("input");
                     checkbox.type = "checkbox";
                     checkbox.style.transform = "scale(1.3)";
@@ -213,10 +209,8 @@ document.addEventListener("DOMContentLoaded", function () {
         renderTable(filtered);
     }
 
-    // LOGIC NÚT RESET: Xóa sạch các ô đã tick
     resetBtn.addEventListener("click", function () {
         if (selectedMembers.size === 0) return;
-        
         if (confirm("Bạn có chắc chắn muốn bỏ chọn tất cả học viên không?")) {
             selectedMembers.clear();
             updateSelectedCount();
@@ -224,53 +218,40 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // LOGIC XUẤT FILE TEXT (.txt): Chỉ lấy mã hội viên, cách nhau bằng khoảng trắng
     exportTxtBtn.addEventListener("click", function () {
         if (selectedMembers.size === 0) {
             alert("Chọn ít nhất 1 học viên để xuất file text!");
             return;
         }
-
         const selectedCodes = [];
-        
-        // Quét qua danh sách dữ liệu gốc để giữ đúng thứ tự sắp xếp hiện tại
         data.forEach(row => {
             const code = row[1];
             if (selectedMembers.has(code)) {
                 selectedCodes.push(code);
             }
         });
-
-        // Nối các mã với nhau bằng 1 dấu cách (khoảng trắng)
         const txtContent = selectedCodes.join(" ");
-
-        // Tạo đối tượng Blob để tải file text trực tiếp trên trình duyệt web tĩnh
         const blob = new Blob([txtContent], { type: "text/plain;charset=utf-8" });
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
         link.download = "Ma_Hoi_Vien.txt";
-        
         document.body.appendChild(link);
         link.click();
         document.body.removeChild(link);
     });
 
-    // LOGIC XUẤT FILE EXCEL (.xlsx) ĐẦY ĐỦ 5 CỘT THEO ĐÚNG THỨ TỰ
     exportBtn.addEventListener("click", function () {
         if (selectedMembers.size === 0) {
             alert("Chọn ít nhất 1 học viên để xuất file Excel!");
             return;
         }
-
         const exportData = [];
         let stt = 1;
-
         data.forEach(row => {
             const [name, code, dob, gender, role] = row;
             if (selectedMembers.has(code)) {
                 const normRole = normalize(role);
                 const permissionValue = calculatePermission(normRole, role);
-
                 exportData.push({
                     "STT": stt++,
                     "Họ và Tên": name,
@@ -280,19 +261,10 @@ document.addEventListener("DOMContentLoaded", function () {
                 });
             }
         });
-
         const worksheet = XLSX.utils.json_to_sheet(exportData);
         const workbook = XLSX.utils.book_new();
         XLSX.utils.book_append_sheet(workbook, worksheet, "Danh Sách");
-
-        worksheet["!cols"] = [
-            { wch: 8 },  // STT
-            { wch: 30 }, // Họ và Tên
-            { wch: 18 }, // Mã hội viên
-            { wch: 10 }, // Quyền
-            { wch: 12 }  // Cấp
-        ];
-
+        worksheet["!cols"] = [{ wch: 8 }, { wch: 30 }, { wch: 18 }, { wch: 10 }, { wch: 12 }];
         XLSX.writeFile(workbook, "DS thi quý .xlsx");
     });
 
