@@ -23,6 +23,15 @@ document.addEventListener("DOMContentLoaded", function () {
     const adminSecretKeyInput = document.getElementById("adminSecretKeyInput");
     const adminEncryptBtn = document.getElementById("adminEncryptBtn");
 
+    // TỰ ĐỘNG ĐĂNG NHẬP ĐỒNG BỘ: Kiểm tra nếu đã nhập pass từ phiên làm việc trước ở thẻ khác
+    const savedPassword = sessionStorage.getItem("web_secret_password");
+    if (savedPassword) {
+        setTimeout(() => {
+            webPasswordInput.value = savedPassword;
+            performDecryption();
+        }, 100);
+    }
+
     // SỰ KIỆN BẤM NÚT MỞ KHÓA WEB
     unlockBtn.addEventListener("click", performDecryption);
     webPasswordInput.addEventListener("keypress", function(e) {
@@ -54,7 +63,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 return;
             }
 
-            // Giải mã thành công -> Khóa màn hình ẩn đi, bóc tách chuỗi CSV thành mảng dữ liệu như cũ
+            // Đồng bộ mật khẩu lưu vào bộ nhớ phiên làm việc của trình duyệt
+            sessionStorage.setItem("web_secret_password", password);
             lockScreen.style.display = "none";
 
             data = decryptedText.split(/\r?\n/)

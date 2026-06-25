@@ -3,23 +3,52 @@ document.addEventListener("DOMContentLoaded", function () {
     const resultContainer = document.getElementById("resultContainer");
     const excelPreviewContainer = document.getElementById("excelPreviewContainer");
 
-    fileInput.addEventListener("change", function (e) {
-        const file = e.target.files[0];
-        if (!file) return;
+    const lockScreen = document.getElementById("lockScreen");
+    const webPasswordInput = document.getElementById("webPasswordInput");
+    const unlockBtn = document.getElementById("unlockBtn");
 
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            const data = new Uint8Array(e.target.result);
-            const workbook = XLSX.read(data, { type: 'array' });
-            
-            const firstSheetName = workbook.SheetNames[0];
-            const worksheet = workbook.Sheets[firstSheetName];
-            const sheetData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-            
-            processExcelData(sheetData);
-        };
-        reader.readAsArrayBuffer(file);
+    // KIỂM TRA ĐĂNG NHẬP ĐỒNG BỘ: Nếu trang chính đã mở khóa thành công trước đó
+    const savedPassword = sessionStorage.getItem("web_secret_password");
+    if (savedPassword) {
+        // Tự động ẩn màn hình khóa đi, không hỏi lại mật khẩu
+        lockScreen.style.display = "none";
+    }
+
+    unlockBtn.addEventListener("click", checkPassword);
+    webPasswordInput.addEventListener("keypress", function(e) {
+        if (e.key === "Enter") checkPassword();
     });
+
+    async function checkPassword() {
+        const password = webPasswordInput.value.trim();
+        if (!password) {
+            alert("Vui lòng nhập mật khẩu!");
+            return;
+        }
+
+        try {
+            // Thử kiểm tra mật khẩu bằng cách lấy file mã hóa trên GitHub về giải mã thử
+            const response = await fetch('data.encrypted');
+            if (!response.ok) {
+                alert("Không tìm thấy file data.encrypted trên hệ thống!");
+                return;
+            }
+            const encryptedData = await response.text();
+            const bytes = CryptoJS.AES.decrypt(encryptedData, password);
+            const decryptedText = bytes.toString(CryptoJS.enc.Utf8);
+
+            if (!decryptedText) {
+                alert("Mật khẩu sai!");
+                return;
+            }
+
+            // Lưu mật khẩu vào phiên làm việc để trang kia dùng chung mà không cần nhập lại
+            sessionStorage.setItem("web_secret_password", password);
+            lockScreen.style.display = "none";
+        } catch (error) {
+            alert("Mật khẩu không chính xác!");
+        }
+    }
 
     function removeVietnameseTones(str) {
         if (!str) return "";
@@ -74,6 +103,24 @@ document.addEventListener("DOMContentLoaded", function () {
         excelPreviewContainer.appendChild(table);
     }
 
+    fileInput.addEventListener("change", function (e) {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            
+            const firstSheetName = workbook.SheetNames[0];
+            const worksheet = workbook.Sheets[firstSheetName];
+            const sheetData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+            
+            processExcelData(sheetData);
+        };
+        reader.readAsArrayBuffer(file);
+    });
+
     function processExcelData(sheetData) {
         resultContainer.innerHTML = ""; 
         
@@ -88,6 +135,7 @@ document.addEventListener("DOMContentLoaded", function () {
         let nameColumnIndex = -1;
         let startRowIndex = -1;
 
+        // Quét tìm cột có chữ "Họ và tên" trong 15 hàng đầu tiên
         for (let r = 0; r < Math.min(sheetData.length, 15); r++) {
             const row = sheetData[r];
             if (!row) continue;
