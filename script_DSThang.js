@@ -73,7 +73,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         if (nameColumnIndex === -1) {
-            alert("Không tìm thấy cột có chữ 'Họ và tên' trong file Excel của bạn!");
+            alert("Thử lại với Danh sách khác.");
             return;
         }
 
@@ -90,7 +90,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         if (formattedNamesList.length === 0) {
-            alert("Không tìm thấy dữ liệu tên học viên nào dưới cột Họ và tên!");
+            alert("Danh sách rỗng.");
             return;
         }
 
