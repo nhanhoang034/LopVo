@@ -95,3 +95,17 @@ th {
     margin: 10px 0;
     font-weight: bold;
 }
+
+
+/* Hiệu ứng di chuột mượt mà cho các nút chuyển đổi menu chức năng */
+.nav-tabs a {
+    transition: all 0.2s ease-in-out;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.nav-tabs a:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+    background-color: #2c3e50 !important;
+    color: #ffffff !important;
+}

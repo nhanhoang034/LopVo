@@ -3,11 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Danh Sách</title>
+    <title>Danh Sách Lớp Võ</title>
     <link rel="stylesheet" href="style.css">
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
 </head>
 <body>
+    <div class="nav-tabs" style="display: flex; gap: 10px; margin: 10px 0 20px 0; width: 100%; max-width: 1000px; justify-content: center;">
+        <a href="index.html" style="padding: 10px 20px; background-color: #34495e; color: white; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 16px;">
+            📋 Danh Sách Thi Quý (Chính)
+        </a>
+        <a href="index_DSThang.html" style="padding: 10px 20px; background-color: #bdc3c7; color: #333; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 16px;">
+            🚀 Chia Nhóm Tên Tháng
+        </a>
+    </div>
+
     <h2>Danh Sách Tạo Bởi Nhân Hoàng</h2>
     <p style="font-weight: bold; font-size: 1.2em; color: #ff0000;">Quyền = 9 - Cấp</p>
 
@@ -46,13 +55,13 @@
         <div style="display: flex; align-items: center; gap: 10px;">
             <span id="selectedCount" style="color: #0088cc; font-weight: bold; margin-right: 5px;">Đã chọn: 0 học viên</span>
             <button id="resetBtn" title="Xóa toàn bộ dấu tick đang chọn" style="padding: 6px 10px; font-size: 16px; background-color: #e74c3c; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
-                Reset
+                🔄 Reset
             </button>
             <button id="exportTxtBtn" title="Tải danh sách Mã Hội Viên dạng file .txt" style="padding: 6px 12px; font-size: 16px; background-color: #34495e; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
-                Xuất Mã Hội Viên
+                📄 Xuất Mã (.txt)
             </button>
             <button id="exportBtn" style="padding: 6px 12px; font-size: 16px; background-color: #27ae60; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold;">
-                Xuất Danh Sách
+                💚 Xuất Excel
             </button>
         </div>
     </div>

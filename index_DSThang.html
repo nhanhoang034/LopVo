@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chia Nhóm Tên Tháng - Lớp Võ</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+    <div class="nav-tabs" style="display: flex; gap: 10px; margin: 10px 0 20px 0; width: 100%; max-width: 1000px; justify-content: center;">
+        <a href="index.html" style="padding: 10px 20px; background-color: #bdc3c7; color: #333; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 16px;">
+            📋 Danh Sách Thi Quý (Chính)
+        </a>
+        <a href="index_DSThang.html" style="padding: 10px 20px; background-color: #34495e; color: white; text-decoration: none; border-radius: 4px; font-weight: bold; font-size: 16px;">
+            🚀 Chia Nhóm Tên Tháng
+        </a>
+    </div>
+
+    <h2>Hệ Thống Chia Nhóm Tên Học Viên Tự Động</h2>
+    <p style="color: #555; margin-bottom: 20px; font-size: 16px;">Tải lên file Excel (.xlsx), hệ thống tự dò cột "Họ và tên", lọc 2 chữ cuối không dấu và gom cụm 13 người.</p>
+
+    <div style="margin-bottom: 30px; background: #f8f9fa; padding: 20px; border: 2px dashed #ccc; border-radius: 8px; width: 100%; max-width: 600px; box-sizing: border-box;">
+        <input type="file" id="excelFileInput" accept=".xlsx, .xls" style="font-size: 16px; cursor: pointer;">
+    </div>
+
+    <div id="resultContainer" style="width: 100%; max-width: 1000px; display: flex; flex-direction: column; gap: 15px;"></div>
+
+    <script src="script_DSThang.js"></script>
+</body>
+</html>
