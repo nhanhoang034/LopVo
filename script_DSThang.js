@@ -1,6 +1,7 @@
 document.addEventListener("DOMContentLoaded", function () {
     const fileInput = document.getElementById("excelFileInput");
     const resultContainer = document.getElementById("resultContainer");
+    const excelPreviewContainer = document.getElementById("excelPreviewContainer");
 
     fileInput.addEventListener("change", function (e) {
         const file = e.target.files[0];
@@ -41,6 +42,38 @@ document.addEventListener("DOMContentLoaded", function () {
         return removeVietnameseTones(lastTwo.join(""));
     }
 
+    // Hàm sinh bảng hiển thị xem trước danh sách Excel gốc ở cột bên trái
+    function renderExcelPreview(sheetData) {
+        excelPreviewContainer.innerHTML = "";
+        if (sheetData.length === 0) return;
+
+        const table = document.createElement("table");
+        table.style.width = "100%";
+        table.style.marginTop = "0";
+        table.style.fontSize = "16px";
+        table.style.borderCollapse = "collapse";
+
+        sheetData.forEach((row, rowIndex) => {
+            // Loại bỏ các dòng trống hoàn toàn trong file Excel để bảng gọn đẹp
+            if (!row || row.length === 0 || row.every(cell => cell === null || cell === undefined || cell === "")) return;
+
+            const tr = document.createElement("tr");
+            row.forEach(cell => {
+                const cellElement = rowIndex === 0 ? document.createElement("th") : document.createElement("td");
+                cellElement.textContent = cell !== undefined && cell !== null ? cell.toString().trim() : "";
+                cellElement.style.border = "1px solid #ddd";
+                cellElement.style.padding = "6px 8px";
+                if (rowIndex === 0) {
+                    cellElement.style.backgroundColor = "#f2f2f2";
+                    cellElement.style.fontWeight = "bold";
+                }
+                tr.appendChild(cellElement);
+            });
+            table.appendChild(tr);
+        });
+        excelPreviewContainer.appendChild(table);
+    }
+
     function processExcelData(sheetData) {
         resultContainer.innerHTML = ""; 
         
@@ -49,20 +82,20 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
+        // Tạo giao diện bảng xem trước ở cột bên trái trước
+        renderExcelPreview(sheetData);
+
         let nameColumnIndex = -1;
         let startRowIndex = -1;
 
-        // THUẬT TOÁN MỚI: Quét rộng 15 hàng đầu tiên và loại bỏ toàn bộ khoảng trắng thừa để đối chiếu
         for (let r = 0; r < Math.min(sheetData.length, 15); r++) {
             const row = sheetData[r];
             if (!row) continue;
             for (let c = 0; c < row.length; c++) {
                 if (row[c] === undefined || row[c] === null) continue;
                 
-                // Chuyển chữ thường, xóa sạch dấu tiếng Việt và xóa toàn bộ khoảng trắng
                 const cellClean = removeVietnameseTones(row[c].toString()).replace(/\s+/g, "");
                 
-                // Kiểm tra xem tiêu đề ô có chứa cụm từ 'hovaten' hay không
                 if (cellClean.includes("hovaten")) {
                     nameColumnIndex = c;
                     startRowIndex = r + 1; 
@@ -120,7 +153,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         const labelSpan = document.createElement("span");
         labelSpan.innerHTML = `<strong>Nhóm ${groupNumber}</strong><br><small style="color:#7f8c8d;">(STT ${fromSTT} - ${toSTT})</small>`;
-        labelSpan.style.minWidth = "120px";
+        labelSpan.style.minWidth = "110px";
         labelSpan.style.textAlign = "left";
         labelSpan.style.fontSize = "15px";
 
@@ -148,7 +181,7 @@ document.addEventListener("DOMContentLoaded", function () {
         copyBtn.style.color = "white";
         copyBtn.style.borderRadius = "4px";
         copyBtn.style.fontWeight = "bold";
-        copyBtn.style.minWidth = "90px";
+        copyBtn.style.minWidth = "80px";
 
         copyBtn.onclick = function () {
             navigator.clipboard.writeText(textData).then(() => {

@@ -24,7 +24,21 @@
         <input type="file" id="excelFileInput" accept=".xlsx, .xls" style="font-size: 16px; cursor: pointer;">
     </div>
 
-    <div id="resultContainer" style="width: 100%; max-width: 1000px; display: flex; flex-direction: column; gap: 15px;"></div>
+    <div class="main-container" style="display: flex; gap: 30px; width: 100%; max-width: 1300px; align-items: flex-start; box-sizing: border-box; padding: 0 10px;">
+        
+        <div style="flex: 1; min-width: 300px; background: #fff; border: 1px solid #ddd; border-radius: 6px; padding: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); max-height: 75vh; overflow-y: auto;">
+            <h3 style="margin-top: 0; margin-bottom: 15px; border-bottom: 2px solid #34495e; padding-bottom: 5px; text-align: left; font-size: 18px;">File Excel Gốc</h3>
+            <div id="excelPreviewContainer">
+                <p style="color: #999; font-size: 15px;">Chưa có dữ liệu. Vui lòng tải file Excel lên.</p>
+            </div>
+        </div>
+
+        <div style="flex: 1.2; min-width: 350px; display: flex; flex-direction: column; gap: 15px; max-height: 75vh; overflow-y: auto; padding-right: 5px;">
+            <h3 style="margin-top: 0; margin-bottom: 0; border-bottom: 2px solid #27ae60; padding-bottom: 5px; text-align: left; font-size: 18px;">Kết Quả Copy Nhóm 13 Tên</h3>
+            <div id="resultContainer" style="display: flex; flex-direction: column; gap: 15px; width: 100%;"></div>
+        </div>
+
+    </div>
 
     <script src="script_DSThang.js"></script>
 </body>
