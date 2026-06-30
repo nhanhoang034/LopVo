@@ -67,7 +67,6 @@ document.addEventListener("DOMContentLoaded", function () {
         return removeVietnameseTones(lastTwo.join(""));
     }
 
-    // Hàm sinh bảng hiển thị xem trước danh sách Excel hoặc PDF ở cột bên trái
     function renderExcelPreview(sheetData) {
         excelPreviewContainer.innerHTML = "";
         if (sheetData.length === 0) return;
@@ -98,7 +97,6 @@ document.addEventListener("DOMContentLoaded", function () {
         excelPreviewContainer.appendChild(table);
     }
 
-    // LẮNG NGHE SỰ KIỆN CHỌN FILE (HỖ TRỢ CẢ EXCEL LẪN PDF)
     fileInput.addEventListener("change", function (e) {
         const file = e.target.files[0];
         if (!file) return;
@@ -107,14 +105,12 @@ document.addEventListener("DOMContentLoaded", function () {
         const reader = new FileReader();
 
         if (fileName.endsWith('.pdf')) {
-            // XỬ LÝ FILE ĐUÔI .PDF
             reader.onload = function (e) {
                 const typedarray = new Uint8Array(e.target.result);
                 processPdfData(typedarray);
             };
             reader.readAsArrayBuffer(file);
         } else {
-            // XỬ LÝ FILE ĐUÔI EXCEL (.xlsx, .xls)
             reader.onload = function (e) {
                 const data = new Uint8Array(e.target.result);
                 const workbook = XLSX.read(data, { type: 'array' });
@@ -127,19 +123,17 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // THUẬT TOÁN XỬ LÝ ĐỌC VÀ TRÍCH XUẤT VĂN BẢN TỪ FILE PDF
+    // THUẬT TOÁN XỬ LÝ PDF ĐÃ SỬA LỖI DÍNH CHỮ X CỦA CỘT GHI CHÚ
     async function processPdfData(typedarray) {
         resultContainer.innerHTML = "";
         try {
             const pdf = await pdfjsLib.getDocument(typedarray).promise;
             let fullTextLines = [];
 
-            // Duyệt qua từng trang của file PDF để gom văn bản
             for (let i = 1; i <= pdf.numPages; i++) {
                 const page = await pdf.getPage(i);
                 const textContent = await page.getTextContent();
                 
-                // Ghép nối các từ nằm cùng một hàng tọa độ
                 let lastY = -1;
                 let pageLines = [];
                 let currentLine = "";
@@ -157,7 +151,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 fullTextLines = fullTextLines.concat(pageLines);
             }
 
-            // Chuyển đổi mảng văn bản thô PDF thành cấu trúc ma trận hàng cột để render Preview bên trái
             const simulatedSheetData = [["STT", "Họ và tên"]];
             const formattedNamesList = [];
             let isRecording = false;
@@ -167,20 +160,21 @@ document.addEventListener("DOMContentLoaded", function () {
                 const line = fullTextLines[i].trim();
                 const cleanLine = removeVietnameseTones(line).replace(/\s+/g, "");
 
-                // Tìm từ khóa kích hoạt bắt đầu lấy tên học viên
                 if (cleanLine.includes("hovaten")) {
                     isRecording = true;
                     continue; 
                 }
 
                 if (isRecording) {
-                    // Nếu gặp các chuỗi kết thúc danh sách hoặc dòng trống thì bỏ qua
                     if (line === "" || cleanLine.includes("ghichu") || cleanLine.includes("danhsachlop")) continue;
                     
-                    // Thuật toán bóc tách thông minh: Bỏ số thứ tự ở đầu dòng văn bản PDF nếu có
+                    // 1. Loại bỏ số thứ tự đứng đầu dòng văn bản PDF nếu có
                     let studentName = line.replace(/^\d+[\s,.\-/]*/, "").trim();
                     
-                    // Nếu chuỗi tên có chứa dấu phẩy hoặc khoảng cách xa với chữ ghi chú, loại bỏ phần sau
+                    // 2. NÂNG CẤP: Loại bỏ ký tự "x" hoặc "X" đứng độc lập ở cuối dòng (do cột Ghi chú lọt vào)
+                    studentName = studentName.replace(/\s+[xX]$/, "").trim();
+
+                    // 3. Nếu chuỗi có chứa dấu phẩy phân tách cột ghi chú, loại bỏ phần sau dấu phẩy
                     if (studentName.includes(",")) studentName = studentName.split(",")[0].trim();
 
                     if (studentName && studentName.length > 2 && isNaN(studentName)) {
@@ -193,13 +187,11 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             if (formattedNamesList.length === 0) {
-                alert("Không tìm thấy dữ liệu tên học viên nào dưới mục 'Họ và tên' trong file PDF!");
+                alert("Không tìm thấy dữ liệu tên học viên nào!");
                 return;
             }
 
-            // Hiển thị bảng xem trước phía bên trái
             renderExcelPreview(simulatedSheetData);
-            // Tiến hành chia cụm 13 người phía bên phải
             generateGroupChunks(formattedNamesList);
 
         } catch (error) {
@@ -208,7 +200,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
-    // HÀM XỬ LÝ FILE EXCEL GỐC (GIỮ NGUYÊN LOGIC CŨ)
     function processExcelData(sheetData) {
         resultContainer.innerHTML = ""; 
         if (sheetData.length === 0) {
@@ -261,7 +252,6 @@ document.addEventListener("DOMContentLoaded", function () {
         generateGroupChunks(formattedNamesList);
     }
 
-    // Hàm chia cụm mảng danh sách tên thành từng cụm 13 người dùng chung
     function generateGroupChunks(namesList) {
         const chunkSize = 13;
         let groupIndex = 1;
