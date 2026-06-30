@@ -7,10 +7,12 @@ document.addEventListener("DOMContentLoaded", function () {
     const webPasswordInput = document.getElementById("webPasswordInput");
     const unlockBtn = document.getElementById("unlockBtn");
 
-    // KIỂM TRA ĐĂNG NHẬP ĐỒNG BỘ: Nếu trang chính đã mở khóa thành công trước đó
+    // Chỉ định worker cho thư viện PDF.js
+    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.4.120/pdf.worker.min.js';
+
+    // KIỂM TRA ĐĂNG NHẬP ĐỒNG BỘ
     const savedPassword = sessionStorage.getItem("web_secret_password");
     if (savedPassword) {
-        // Tự động ẩn màn hình khóa đi, không hỏi lại mật khẩu
         lockScreen.style.display = "none";
     }
 
@@ -25,9 +27,7 @@ document.addEventListener("DOMContentLoaded", function () {
             alert("Vui lòng nhập mật khẩu!");
             return;
         }
-
         try {
-            // Thử kiểm tra mật khẩu bằng cách lấy file mã hóa trên GitHub về giải mã thử
             const response = await fetch('data.encrypted');
             if (!response.ok) {
                 alert("Không tìm thấy file data.encrypted trên hệ thống!");
@@ -41,8 +41,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 alert("Mật khẩu sai!");
                 return;
             }
-
-            // Lưu mật khẩu vào phiên làm việc để trang kia dùng chung mà không cần nhập lại
             sessionStorage.setItem("web_secret_password", password);
             lockScreen.style.display = "none";
         } catch (error) {
@@ -63,15 +61,13 @@ document.addEventListener("DOMContentLoaded", function () {
     function extractTwoLastWords(fullName) {
         if (!fullName) return "";
         const words = fullName.trim().split(/\s+/);
-        
         if (words.length === 0) return "";
         if (words.length === 1) return removeVietnameseTones(words[0]);
-
         const lastTwo = words.slice(-2);
         return removeVietnameseTones(lastTwo.join(""));
     }
 
-    // Hàm sinh bảng hiển thị xem trước danh sách Excel gốc ở cột bên trái
+    // Hàm sinh bảng hiển thị xem trước danh sách Excel hoặc PDF ở cột bên trái
     function renderExcelPreview(sheetData) {
         excelPreviewContainer.innerHTML = "";
         if (sheetData.length === 0) return;
@@ -83,7 +79,6 @@ document.addEventListener("DOMContentLoaded", function () {
         table.style.borderCollapse = "collapse";
 
         sheetData.forEach((row, rowIndex) => {
-            // Loại bỏ các dòng trống hoàn toàn trong file Excel để bảng gọn đẹp
             if (!row || row.length === 0 || row.every(cell => cell === null || cell === undefined || cell === "")) return;
 
             const tr = document.createElement("tr");
@@ -103,47 +98,135 @@ document.addEventListener("DOMContentLoaded", function () {
         excelPreviewContainer.appendChild(table);
     }
 
+    // LẮNG NGHE SỰ KIỆN CHỌN FILE (HỖ TRỢ CẢ EXCEL LẪN PDF)
     fileInput.addEventListener("change", function (e) {
         const file = e.target.files[0];
         if (!file) return;
 
+        const fileName = file.name.toLowerCase();
         const reader = new FileReader();
-        reader.onload = function (e) {
-            const data = new Uint8Array(e.target.result);
-            const workbook = XLSX.read(data, { type: 'array' });
-            
-            const firstSheetName = workbook.SheetNames[0];
-            const worksheet = workbook.Sheets[firstSheetName];
-            const sheetData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
-            
-            processExcelData(sheetData);
-        };
-        reader.readAsArrayBuffer(file);
+
+        if (fileName.endsWith('.pdf')) {
+            // XỬ LÝ FILE ĐUÔI .PDF
+            reader.onload = function (e) {
+                const typedarray = new Uint8Array(e.target.result);
+                processPdfData(typedarray);
+            };
+            reader.readAsArrayBuffer(file);
+        } else {
+            // XỬ LÝ FILE ĐUÔI EXCEL (.xlsx, .xls)
+            reader.onload = function (e) {
+                const data = new Uint8Array(e.target.result);
+                const workbook = XLSX.read(data, { type: 'array' });
+                const firstSheetName = workbook.SheetNames[0];
+                const worksheet = workbook.Sheets[firstSheetName];
+                const sheetData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                processExcelData(sheetData);
+            };
+            reader.readAsArrayBuffer(file);
+        }
     });
 
+    // THUẬT TOÁN XỬ LÝ ĐỌC VÀ TRÍCH XUẤT VĂN BẢN TỪ FILE PDF
+    async function processPdfData(typedarray) {
+        resultContainer.innerHTML = "";
+        try {
+            const pdf = await pdfjsLib.getDocument(typedarray).promise;
+            let fullTextLines = [];
+
+            // Duyệt qua từng trang của file PDF để gom văn bản
+            for (let i = 1; i <= pdf.numPages; i++) {
+                const page = await pdf.getPage(i);
+                const textContent = await page.getTextContent();
+                
+                // Ghép nối các từ nằm cùng một hàng tọa độ
+                let lastY = -1;
+                let pageLines = [];
+                let currentLine = "";
+
+                textContent.items.forEach(item => {
+                    if (lastY === -1 || Math.abs(item.transform[5] - lastY) < 5) {
+                        currentLine += " " + item.str;
+                    } else {
+                        if (currentLine.trim()) pageLines.push(currentLine.trim());
+                        currentLine = item.str;
+                    }
+                    lastY = item.transform[5];
+                });
+                if (currentLine.trim()) pageLines.push(currentLine.trim());
+                fullTextLines = fullTextLines.concat(pageLines);
+            }
+
+            // Chuyển đổi mảng văn bản thô PDF thành cấu trúc ma trận hàng cột để render Preview bên trái
+            const simulatedSheetData = [["STT", "Họ và tên"]];
+            const formattedNamesList = [];
+            let isRecording = false;
+            let sttCounter = 1;
+
+            for (let i = 0; i < fullTextLines.length; i++) {
+                const line = fullTextLines[i].trim();
+                const cleanLine = removeVietnameseTones(line).replace(/\s+/g, "");
+
+                // Tìm từ khóa kích hoạt bắt đầu lấy tên học viên
+                if (cleanLine.includes("hovaten")) {
+                    isRecording = true;
+                    continue; 
+                }
+
+                if (isRecording) {
+                    // Nếu gặp các chuỗi kết thúc danh sách hoặc dòng trống thì bỏ qua
+                    if (line === "" || cleanLine.includes("ghichu") || cleanLine.includes("danhsachlop")) continue;
+                    
+                    // Thuật toán bóc tách thông minh: Bỏ số thứ tự ở đầu dòng văn bản PDF nếu có
+                    let studentName = line.replace(/^\d+[\s,.\-/]*/, "").trim();
+                    
+                    // Nếu chuỗi tên có chứa dấu phẩy hoặc khoảng cách xa với chữ ghi chú, loại bỏ phần sau
+                    if (studentName.includes(",")) studentName = studentName.split(",")[0].trim();
+
+                    if (studentName && studentName.length > 2 && isNaN(studentName)) {
+                        simulatedSheetData.push([sttCounter++, studentName]);
+                        
+                        const processedName = extractTwoLastWords(studentName);
+                        if (processedName) formattedNamesList.push(processedName);
+                    }
+                }
+            }
+
+            if (formattedNamesList.length === 0) {
+                alert("Không tìm thấy dữ liệu tên học viên nào dưới mục 'Họ và tên' trong file PDF!");
+                return;
+            }
+
+            // Hiển thị bảng xem trước phía bên trái
+            renderExcelPreview(simulatedSheetData);
+            // Tiến hành chia cụm 13 người phía bên phải
+            generateGroupChunks(formattedNamesList);
+
+        } catch (error) {
+            alert("Lỗi khi đọc file PDF!");
+            console.error(error);
+        }
+    }
+
+    // HÀM XỬ LÝ FILE EXCEL GỐC (GIỮ NGUYÊN LOGIC CŨ)
     function processExcelData(sheetData) {
         resultContainer.innerHTML = ""; 
-        
         if (sheetData.length === 0) {
             alert("File Excel trống hoặc không đúng định dạng!");
             return;
         }
 
-        // Tạo giao diện bảng xem trước ở cột bên trái trước
         renderExcelPreview(sheetData);
 
         let nameColumnIndex = -1;
         let startRowIndex = -1;
 
-        // Quét tìm cột có chữ "Họ và tên" trong 15 hàng đầu tiên
         for (let r = 0; r < Math.min(sheetData.length, 15); r++) {
             const row = sheetData[r];
             if (!row) continue;
             for (let c = 0; c < row.length; c++) {
                 if (row[c] === undefined || row[c] === null) continue;
-                
                 const cellClean = removeVietnameseTones(row[c].toString()).replace(/\s+/g, "");
-                
                 if (cellClean.includes("hovaten")) {
                     nameColumnIndex = c;
                     startRowIndex = r + 1; 
@@ -175,13 +258,16 @@ document.addEventListener("DOMContentLoaded", function () {
             return;
         }
 
+        generateGroupChunks(formattedNamesList);
+    }
+
+    // Hàm chia cụm mảng danh sách tên thành từng cụm 13 người dùng chung
+    function generateGroupChunks(namesList) {
         const chunkSize = 13;
         let groupIndex = 1;
-
-        for (let i = 0; i < formattedNamesList.length; i += chunkSize) {
-            const chunk = formattedNamesList.slice(i, i + chunkSize);
+        for (let i = 0; i < namesList.length; i += chunkSize) {
+            const chunk = namesList.slice(i, i + chunkSize);
             const combinedText = chunk.join(" ");
-
             createGroupRowUI(groupIndex, combinedText, i + 1, i + chunk.length);
             groupIndex++;
         }
@@ -240,7 +326,7 @@ document.addEventListener("DOMContentLoaded", function () {
                     copyBtn.style.backgroundColor = "#3498db";
                 }, 1200);
             }).catch(err => {
-                console.error("Lỗi không thể copy nhóm:", err);
+                console.error("Lỗi copy nhóm:", err);
             });
         };
 
