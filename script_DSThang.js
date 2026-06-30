@@ -123,7 +123,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    // THUẬT TOÁN XỬ LÝ PDF ĐÃ SỬA LỖI DÍNH CHỮ X CỦA CỘT GHI CHÚ
+    // THUẬT TOÁN XỬ LÝ PDF: TRÍCH XUẤT VÀ HIỂN THỊ ĐẦY ĐỦ CỘT GHI CHÚ BÊN TRÁI
     async function processPdfData(typedarray) {
         resultContainer.innerHTML = "";
         try {
@@ -151,7 +151,8 @@ document.addEventListener("DOMContentLoaded", function () {
                 fullTextLines = fullTextLines.concat(pageLines);
             }
 
-            const simulatedSheetData = [["STT", "Họ và tên"]];
+            // Thêm tiêu đề cột thứ 3: Ghi chú
+            const simulatedSheetData = [["STT", "Họ và tên", "Ghi chú"]];
             const formattedNamesList = [];
             let isRecording = false;
             let sttCounter = 1;
@@ -168,17 +169,24 @@ document.addEventListener("DOMContentLoaded", function () {
                 if (isRecording) {
                     if (line === "" || cleanLine.includes("ghichu") || cleanLine.includes("danhsachlop")) continue;
                     
-                    // 1. Loại bỏ số thứ tự đứng đầu dòng văn bản PDF nếu có
                     let studentName = line.replace(/^\d+[\s,.\-/]*/, "").trim();
-                    
-                    // 2. NÂNG CẤP: Loại bỏ ký tự "x" hoặc "X" đứng độc lập ở cuối dòng (do cột Ghi chú lọt vào)
-                    studentName = studentName.replace(/\s+[xX]$/, "").trim();
+                    let noteValue = ""; // Biến chứa giá trị ghi chú của học viên
 
-                    // 3. Nếu chuỗi có chứa dấu phẩy phân tách cột ghi chú, loại bỏ phần sau dấu phẩy
-                    if (studentName.includes(",")) studentName = studentName.split(",")[0].trim();
+                    // Kiểm tra xem cuối dòng văn bản PDF có chứa chữ x/X độc lập của cột ghi chú không
+                    if (/\s+[xX]$/.test(studentName)) {
+                        noteValue = studentName.match(/\s+([xX])$/)[1]; // Lấy chữ x ra
+                        studentName = studentName.replace(/\s+[xX]$/, "").trim(); // Cắt bỏ chữ x khỏi chuỗi tên
+                    }
+
+                    if (studentName.includes(",")) {
+                        const parts = studentName.split(",");
+                        studentName = parts[0].trim();
+                        if (parts[1]) noteValue = parts[1].trim();
+                    }
 
                     if (studentName && studentName.length > 2 && isNaN(studentName)) {
-                        simulatedSheetData.push([sttCounter++, studentName]);
+                        // Đẩy đầy đủ 3 giá trị tương ứng với 3 cột vào bảng xem trước
+                        simulatedSheetData.push([sttCounter++, studentName, noteValue]);
                         
                         const processedName = extractTwoLastWords(studentName);
                         if (processedName) formattedNamesList.push(processedName);
